@@ -1,4 +1,4 @@
-package com.magazinestore.controller;
+package com.magazinestore.produto.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
