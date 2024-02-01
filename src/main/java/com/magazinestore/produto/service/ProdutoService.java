@@ -1,4 +1,4 @@
-package com.magazinestore.service;
+package com.magazinestore.produto.service;
 
 import org.springframework.stereotype.Service;
 
