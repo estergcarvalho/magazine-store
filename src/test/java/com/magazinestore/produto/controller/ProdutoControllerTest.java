@@ -47,20 +47,23 @@ public class ProdutoControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private static final String PRODUTO_TELEVISAO_NOME = "Smart TV 55” UHD 4K LED LG";
+    private static final String PRODUTO_TELEVISAO_DESCRICAO = "Ela possui resolução UHD 4K com tecnologia LED";
+
     @Test
     @DisplayName("Deve cadastrar um produto com sucesso")
     public void deveCadastrarProduto() throws Exception {
         ProdutoRequest produtoRequest = ProdutoRequest.builder()
-            .nome("Smart TV 55” UHD 4K LED LG")
-            .descricao("Ela possui resolução UHD 4K com tecnologia LED")
+            .nome(PRODUTO_TELEVISAO_NOME)
+            .descricao(PRODUTO_TELEVISAO_DESCRICAO)
             .preco(new BigDecimal("2599.0"))
             .marca("LG")
             .build();
 
         ProdutoResponse produtoResponse = ProdutoResponse.builder()
             .id(1L)
-            .nome("Smart TV 55” UHD 4K LED LG")
-            .descricao("Ela possui resolução UHD 4K com tecnologia LED")
+            .nome(PRODUTO_TELEVISAO_NOME)
+            .descricao(PRODUTO_TELEVISAO_DESCRICAO)
             .preco(new BigDecimal("2599.0"))
             .marca("LG")
             .build();
@@ -71,10 +74,10 @@ public class ProdutoControllerTest {
         mockMvc.perform(post("/produtos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(produtoRequest)))
-            .andExpect(status().isOk())
+            .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(1L))
-            .andExpect(jsonPath("$.nome").value("Smart TV 55” UHD 4K LED LG"))
-            .andExpect(jsonPath("$.descricao").value("Ela possui resolução UHD 4K com tecnologia LED"))
+            .andExpect(jsonPath("$.nome").value(PRODUTO_TELEVISAO_NOME))
+            .andExpect(jsonPath("$.descricao").value(PRODUTO_TELEVISAO_DESCRICAO))
             .andExpect(jsonPath("$.preco").value("2599.0"))
             .andExpect(jsonPath("$.marca").value("LG"));
     }

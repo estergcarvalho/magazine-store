@@ -30,20 +30,23 @@ public class ProdutoServiceTest {
     @Mock
     ProdutoRepository produtoRepository;
 
+    private static final String PRODUTO_GUARDA_ROUPA_NOME = "Guarda-Roupa de Madeira Maciça";
+    private static final String PRODUTO_GUARDA_ROUPA_DESCRICAO = "Guarda-roupa espaçoso com acabamento em madeira";
+
     @Test
     @DisplayName("Deve cadastrar produto com sucesso")
     public void deveCadastrarProdutoComSucesso() {
         ProdutoRequest produtoRequest = ProdutoRequest.builder()
-            .nome("Guarda-Roupa de Madeira Maciça")
-            .descricao("Guarda-roupa espaçoso com acabamento em madeira maciça, perfeito para organizar suas roupas.")
+            .nome(PRODUTO_GUARDA_ROUPA_NOME)
+            .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(new BigDecimal("1299.99"))
             .marca("Silvia Design")
             .build();
 
         Produto produtoEsperado = Produto.builder()
             .id(1L)
-            .nome("Guarda-Roupa de Madeira Maciça")
-            .descricao("Guarda-roupa espaçoso com acabamento em madeira maciça, perfeito para organizar suas roupas.")
+            .nome(PRODUTO_GUARDA_ROUPA_NOME)
+            .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(new BigDecimal("1299.99"))
             .marca("Silvia Design")
             .build();
@@ -53,8 +56,8 @@ public class ProdutoServiceTest {
         ProdutoResponse produtoResponse = produtoService.cadastrar(produtoRequest);
 
         assertEquals(1L, produtoResponse.getId().longValue());
-        assertEquals("Guarda-Roupa de Madeira Maciça", produtoResponse.getNome());
-        assertEquals("Guarda-roupa espaçoso com acabamento em madeira maciça, perfeito para organizar suas roupas.", produtoResponse.getDescricao());
+        assertEquals(PRODUTO_GUARDA_ROUPA_NOME, produtoResponse.getNome());
+        assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, produtoResponse.getDescricao());
         assertEquals(new BigDecimal("1299.99"), produtoResponse.getPreco());
         assertEquals("Silvia Design", produtoResponse.getMarca());
     }

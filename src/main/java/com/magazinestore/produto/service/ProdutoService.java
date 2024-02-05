@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class ProdutoService {
 
     @Autowired
-    ProdutoRepository produtoRepository;
+    private ProdutoRepository produtoRepository;
 
     public ProdutoResponse cadastrar(ProdutoRequest produtoRequest) {
         Produto produto = Produto.builder()

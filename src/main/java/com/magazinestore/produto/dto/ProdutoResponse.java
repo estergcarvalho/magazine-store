@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 @Getter
 @Builder
 public class ProdutoResponse {
+
     private Long id;
     private String nome;
     private String descricao;
