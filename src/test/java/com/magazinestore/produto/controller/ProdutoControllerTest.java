@@ -49,6 +49,8 @@ public class ProdutoControllerTest {
 
     private static final String PRODUTO_TELEVISAO_NOME = "Smart TV 55” UHD 4K LED LG";
     private static final String PRODUTO_TELEVISAO_DESCRICAO = "Ela possui resolução UHD 4K com tecnologia LED";
+    private static final String PRODUTO_TELEVISAO_PRECO = "2599.0";
+    private static final String PRODUTO_TELEVISAO_MARCA= "LG";
 
     @Test
     @DisplayName("Deve cadastrar um produto com sucesso")
@@ -56,16 +58,16 @@ public class ProdutoControllerTest {
         ProdutoRequest produtoRequest = ProdutoRequest.builder()
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
-            .preco(new BigDecimal("2599.0"))
-            .marca("LG")
+            .preco(new BigDecimal(PRODUTO_TELEVISAO_PRECO))
+            .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 
         ProdutoResponse produtoResponse = ProdutoResponse.builder()
             .id(1L)
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
-            .preco(new BigDecimal("2599.0"))
-            .marca("LG")
+            .preco(new BigDecimal(PRODUTO_TELEVISAO_PRECO))
+            .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 
         when(produtoService.cadastrar(any(ProdutoRequest.class))).thenReturn(produtoResponse);
@@ -78,8 +80,8 @@ public class ProdutoControllerTest {
             .andExpect(jsonPath("$.id").value(1L))
             .andExpect(jsonPath("$.nome").value(PRODUTO_TELEVISAO_NOME))
             .andExpect(jsonPath("$.descricao").value(PRODUTO_TELEVISAO_DESCRICAO))
-            .andExpect(jsonPath("$.preco").value("2599.0"))
-            .andExpect(jsonPath("$.marca").value("LG"));
+            .andExpect(jsonPath("$.preco").value(PRODUTO_TELEVISAO_PRECO))
+            .andExpect(jsonPath("$.marca").value(PRODUTO_TELEVISAO_MARCA));
     }
 
 }
