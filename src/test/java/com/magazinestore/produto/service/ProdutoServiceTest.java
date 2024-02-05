@@ -25,10 +25,10 @@ import static org.mockito.Mockito.when;
 public class ProdutoServiceTest {
 
     @InjectMocks
-    ProdutoService produtoService;
+    private ProdutoService produtoService;
 
     @Mock
-    ProdutoRepository produtoRepository;
+    private ProdutoRepository produtoRepository;
 
     private static final String PRODUTO_GUARDA_ROUPA_NOME = "Guarda-Roupa de Madeira Maciça";
     private static final String PRODUTO_GUARDA_ROUPA_DESCRICAO = "Guarda-roupa espaçoso com acabamento em madeira";
