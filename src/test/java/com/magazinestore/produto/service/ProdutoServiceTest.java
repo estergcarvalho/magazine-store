@@ -32,7 +32,7 @@ public class ProdutoServiceTest {
 
     private static final String PRODUTO_GUARDA_ROUPA_NOME = "Guarda-Roupa de Madeira Maciça";
     private static final String PRODUTO_GUARDA_ROUPA_DESCRICAO = "Guarda-roupa espaçoso com acabamento em madeira";
-    private static final String PRODUTO_GUARDA_ROUPA_PRECO = "1299.99";
+    private static final BigDecimal PRODUTO_GUARDA_ROUPA_PRECO = new BigDecimal("1299.99");
     private static final String PRODUTO_GUARDA_ROUPA_MARCA = "Silvia Design";
 
 
@@ -42,7 +42,7 @@ public class ProdutoServiceTest {
         ProdutoRequest produtoRequest = ProdutoRequest.builder()
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
-            .preco(new BigDecimal(PRODUTO_GUARDA_ROUPA_PRECO))
+            .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
             .build();
 
@@ -50,7 +50,7 @@ public class ProdutoServiceTest {
             .id(1L)
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
-            .preco(new BigDecimal(PRODUTO_GUARDA_ROUPA_PRECO))
+            .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
             .build();
 
@@ -61,7 +61,7 @@ public class ProdutoServiceTest {
         assertEquals(1L, produtoResponse.getId().longValue());
         assertEquals(PRODUTO_GUARDA_ROUPA_NOME, produtoResponse.getNome());
         assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, produtoResponse.getDescricao());
-        assertEquals(new BigDecimal(PRODUTO_GUARDA_ROUPA_PRECO), produtoResponse.getPreco());
+        assertEquals(PRODUTO_GUARDA_ROUPA_PRECO, produtoResponse.getPreco());
         assertEquals(PRODUTO_GUARDA_ROUPA_MARCA, produtoResponse.getMarca());
     }
 
