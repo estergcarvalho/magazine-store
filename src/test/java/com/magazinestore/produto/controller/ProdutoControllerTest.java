@@ -49,7 +49,7 @@ public class ProdutoControllerTest {
 
     private static final String PRODUTO_TELEVISAO_NOME = "Smart TV 55” UHD 4K LED LG";
     private static final String PRODUTO_TELEVISAO_DESCRICAO = "Ela possui resolução UHD 4K com tecnologia LED";
-    private static final String PRODUTO_TELEVISAO_PRECO = "2599.0";
+    private static final BigDecimal PRODUTO_TELEVISAO_PRECO = new BigDecimal("2599.0");
     private static final String PRODUTO_TELEVISAO_MARCA= "LG";
 
     @Test
@@ -58,7 +58,7 @@ public class ProdutoControllerTest {
         ProdutoRequest produtoRequest = ProdutoRequest.builder()
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
-            .preco(new BigDecimal(PRODUTO_TELEVISAO_PRECO))
+            .preco(PRODUTO_TELEVISAO_PRECO)
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 
@@ -66,7 +66,7 @@ public class ProdutoControllerTest {
             .id(1L)
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
-            .preco(new BigDecimal(PRODUTO_TELEVISAO_PRECO))
+            .preco(PRODUTO_TELEVISAO_PRECO)
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 

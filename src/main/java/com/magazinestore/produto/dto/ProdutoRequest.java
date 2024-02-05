@@ -15,14 +15,14 @@ public class ProdutoRequest {
     @NotBlank(message = "Nome do produto não deve ser nulo ou vazio")
     private String nome;
 
-    @NotBlank(message = "Descrição do produto não deve ser nulo ou vazio")
+    @NotBlank(message = "Descrição do produto não deve ser nulo ou vazia")
     private String descricao;
 
     @NotNull(message = "Preço do produto não deve ser nulo ou vazio")
     @DecimalMin(value = "0.0", inclusive = false, message = "Preço do produto deve ser maior que zero")
     private BigDecimal preco;
 
-    @NotBlank(message = "Marca do produto não deve ser nulo ou vazio")
+    @NotBlank(message = "Marca do produto não deve ser nulo ou vazia")
     private String marca;
 
 }
