@@ -7,6 +7,9 @@ import com.magazinestore.produto.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ProdutoService {
 
@@ -30,6 +33,26 @@ public class ProdutoService {
             .preco(produtoSalvo.getPreco())
             .marca(produtoSalvo.getMarca())
             .build();
+    }
+
+    public List<ProdutoResponse> listar() {
+        List<Produto> produtos = produtoRepository.findAll();
+
+        List<ProdutoResponse> produtosResponse = new ArrayList<>();
+
+        produtos.forEach(produto -> {
+            ProdutoResponse produtoResponse = ProdutoResponse.builder()
+                .id(produto.getId())
+                .nome(produto.getNome())
+                .descricao(produto.getDescricao())
+                .marca(produto.getMarca())
+                .preco(produto.getPreco())
+                .build();
+
+            produtosResponse.add(produtoResponse);
+        });
+
+        return produtosResponse;
     }
 
 }

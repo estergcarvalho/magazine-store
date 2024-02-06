@@ -3,6 +3,7 @@ package com.magazinestore.produto.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.magazinestore.produto.dto.ProdutoRequest;
 import com.magazinestore.produto.dto.ProdutoResponse;
+import com.magazinestore.produto.model.Produto;
 import com.magazinestore.produto.repository.ProdutoRepository;
 import com.magazinestore.produto.service.ProdutoService;
 import org.junit.Test;
@@ -19,9 +20,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,13 +52,18 @@ public class ProdutoControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private static final String PRODUTO_GUARDA_ROUPA_NOME = "Guarda-Roupa de Madeira Maciça";
+    private static final String PRODUTO_GUARDA_ROUPA_DESCRICAO = "Guarda-roupa espaçoso com acabamento em madeira";
+    private static final BigDecimal PRODUTO_GUARDA_ROUPA_PRECO = new BigDecimal("1299.99");
+    private static final String PRODUTO_GUARDA_ROUPA_MARCA = "Silvia Design";
+
     private static final String PRODUTO_TELEVISAO_NOME = "Smart TV 55” UHD 4K LED LG";
     private static final String PRODUTO_TELEVISAO_DESCRICAO = "Ela possui resolução UHD 4K com tecnologia LED";
     private static final BigDecimal PRODUTO_TELEVISAO_PRECO = new BigDecimal("2599.0");
-    private static final String PRODUTO_TELEVISAO_MARCA= "LG";
+    private static final String PRODUTO_TELEVISAO_MARCA = "LG";
 
     @Test
-    @DisplayName("Deve cadastrar um produto com sucesso")
+    @DisplayName("Deve cadastrar um produto")
     public void deveCadastrarProduto() throws Exception {
         ProdutoRequest produtoRequest = ProdutoRequest.builder()
             .nome(PRODUTO_TELEVISAO_NOME)
@@ -82,6 +92,41 @@ public class ProdutoControllerTest {
             .andExpect(jsonPath("$.descricao").value(PRODUTO_TELEVISAO_DESCRICAO))
             .andExpect(jsonPath("$.preco").value(PRODUTO_TELEVISAO_PRECO))
             .andExpect(jsonPath("$.marca").value(PRODUTO_TELEVISAO_MARCA));
+    }
+
+    @Test
+    @DisplayName("Deve listar produtos")
+    public void deveListarProdutos() throws Exception {
+        List<ProdutoResponse> produtoResponse = new ArrayList<>();
+
+        Produto produto1 = Produto.builder()
+            .id(1L)
+            .nome(PRODUTO_GUARDA_ROUPA_NOME)
+            .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
+            .preco(PRODUTO_GUARDA_ROUPA_PRECO)
+            .marca(PRODUTO_GUARDA_ROUPA_MARCA)
+            .build();
+
+        ProdutoResponse produtoResponse1 = ProdutoResponse.builder()
+            .id(produto1.getId())
+            .nome(produto1.getNome())
+            .descricao(produto1.getDescricao())
+            .preco(produto1.getPreco())
+            .marca(produto1.getMarca())
+            .build();
+        produtoResponse.add(produtoResponse1);
+
+        when(produtoService.listar()).thenReturn(produtoResponse);
+
+        mockMvc.perform(get("/produtos/lista")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].id").value(1L))
+            .andExpect(jsonPath("$[0].nome").value(PRODUTO_GUARDA_ROUPA_NOME))
+            .andExpect(jsonPath("$[0].descricao").value(PRODUTO_GUARDA_ROUPA_DESCRICAO))
+            .andExpect(jsonPath("$[0].preco").value(PRODUTO_GUARDA_ROUPA_PRECO))
+            .andExpect(jsonPath("$[0].marca").value(PRODUTO_GUARDA_ROUPA_MARCA));
     }
 
 }
