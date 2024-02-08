@@ -100,8 +100,8 @@ public class ProdutoServiceTest {
     }
 
     @Test
-    @DisplayName("Deve retornar status 404 Not Found para produto não encontrado")
-    public void deveRetornarStatus404ProdutoNaoEncontrado() throws Exception {
+    @DisplayName("Deve lançar exception para produto não encontrado")
+    public void deveLancarExceptionProdutoNaoEncontrado() throws Exception {
         Long idDoProduto = 99999999L;
 
         when(produtoRepository.findById(idDoProduto)).thenReturn(Optional.empty());
