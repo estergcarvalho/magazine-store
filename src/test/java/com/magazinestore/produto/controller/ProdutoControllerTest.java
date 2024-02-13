@@ -20,7 +20,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -52,22 +51,27 @@ public class ProdutoControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private static final String PRODUTO_GUARDA_ROUPA_NOME = "Guarda-Roupa de Madeira Maciça";
+    private static final String PRODUTO_GUARDA_ROUPA_DESCRICAO = "Guarda-roupa espaçoso com acabamento em madeira";
+    private static final BigDecimal PRODUTO_GUARDA_ROUPA_PRECO = new BigDecimal("1299.99");
+    private static final String PRODUTO_GUARDA_ROUPA_MARCA = "Silvia Design";
+
     private static final String PRODUTO_TELEVISAO_NOME = "Smart TV 55” UHD 4K LED LG";
     private static final String PRODUTO_TELEVISAO_DESCRICAO = "Ela possui resolução UHD 4K com tecnologia LED";
     private static final BigDecimal PRODUTO_TELEVISAO_PRECO = new BigDecimal("2599.0");
     private static final String PRODUTO_TELEVISAO_MARCA = "LG";
 
     @Test
-    @DisplayName("Deve cadastrar um produto com sucesso")
+    @DisplayName("Deve cadastrar um produto")
     public void deveCadastrarProduto() throws Exception {
-        ProdutoRequest produtoRequest = ProdutoRequest.builder()
+        ProdutoRequest televisaoRequest = ProdutoRequest.builder()
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
             .preco(PRODUTO_TELEVISAO_PRECO)
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 
-        ProdutoResponse produtoResponse = ProdutoResponse.builder()
+        ProdutoResponse televisao = ProdutoResponse.builder()
             .id(1L)
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
@@ -75,12 +79,12 @@ public class ProdutoControllerTest {
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 
-        when(produtoService.cadastrar(any(ProdutoRequest.class))).thenReturn(produtoResponse);
-        when(produtoRepository.save(any())).thenReturn(produtoResponse);
+        when(produtoService.cadastrar(any(ProdutoRequest.class))).thenReturn(televisao);
+        when(produtoRepository.save(any())).thenReturn(televisao);
 
         mockMvc.perform(post("/produtos")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(produtoRequest)))
+                .content(objectMapper.writeValueAsString(televisaoRequest)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(1L))
             .andExpect(jsonPath("$.nome").value(PRODUTO_TELEVISAO_NOME))
@@ -92,7 +96,7 @@ public class ProdutoControllerTest {
     @Test
     @DisplayName("Deve buscar produto por id")
     public void deveBuscarProdutoPorId() throws Exception {
-        Produto produto = Produto.builder()
+        ProdutoResponse televisao = ProdutoResponse.builder()
             .id(5L)
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
@@ -100,25 +104,17 @@ public class ProdutoControllerTest {
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 
-        ProdutoResponse produtoResponse = ProdutoResponse.builder()
-            .id(produto.getId())
-            .nome(produto.getNome())
-            .descricao(produto.getDescricao())
-            .preco(produto.getPreco())
-            .marca(produto.getMarca())
-            .build();
-
-        when(produtoRepository.findById(anyLong())).thenReturn(Optional.of(produto));
-        when(produtoService.buscarPorId(5L)).thenReturn(Collections.singletonList(produtoResponse));
+        when(produtoService.buscarPorId(anyLong())).thenReturn(televisao);
+        when(produtoRepository.findById(anyLong())).thenReturn(Optional.of(Produto.builder().id(5L).build()));
 
         mockMvc.perform(get("/produtos/{id}", 5L)
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].id").value(5L))
-            .andExpect(jsonPath("$[0].nome").value(PRODUTO_TELEVISAO_NOME))
-            .andExpect(jsonPath("$[0].descricao").value(PRODUTO_TELEVISAO_DESCRICAO))
-            .andExpect(jsonPath("$[0].preco").value(PRODUTO_TELEVISAO_PRECO))
-            .andExpect(jsonPath("$[0].marca").value(PRODUTO_TELEVISAO_MARCA));
+            .andExpect(jsonPath("$.id").value(5L))
+            .andExpect(jsonPath("$.nome").value(PRODUTO_TELEVISAO_NOME))
+            .andExpect(jsonPath("$.descricao").value(PRODUTO_TELEVISAO_DESCRICAO))
+            .andExpect(jsonPath("$.preco").value(PRODUTO_TELEVISAO_PRECO))
+            .andExpect(jsonPath("$.marca").value(PRODUTO_TELEVISAO_MARCA));
     }
 
     @Test

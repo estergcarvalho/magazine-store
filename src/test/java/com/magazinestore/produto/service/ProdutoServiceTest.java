@@ -16,11 +16,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -44,14 +43,14 @@ public class ProdutoServiceTest {
     @Test
     @DisplayName("Deve cadastrar produto com sucesso")
     public void deveCadastrarProdutoComSucesso() {
-        ProdutoRequest produtoRequest = ProdutoRequest.builder()
+        ProdutoRequest guardaRoupaRequest = ProdutoRequest.builder()
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
             .build();
 
-        Produto produtoEsperado = Produto.builder()
+        Produto guardaRoupa = Produto.builder()
             .id(1L)
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
@@ -59,54 +58,48 @@ public class ProdutoServiceTest {
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
             .build();
 
-        when(produtoRepository.save(ArgumentMatchers.any(Produto.class))).thenReturn(produtoEsperado);
+        when(produtoRepository.save(ArgumentMatchers.any(Produto.class))).thenReturn(guardaRoupa);
 
-        ProdutoResponse produtoResponse = produtoService.cadastrar(produtoRequest);
+        ProdutoResponse guardaRoupaResponse = produtoService.cadastrar(guardaRoupaRequest);
 
-        assertEquals(1L, produtoResponse.getId().longValue());
-        assertEquals(PRODUTO_GUARDA_ROUPA_NOME, produtoResponse.getNome());
-        assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, produtoResponse.getDescricao());
-        assertEquals(PRODUTO_GUARDA_ROUPA_PRECO, produtoResponse.getPreco());
-        assertEquals(PRODUTO_GUARDA_ROUPA_MARCA, produtoResponse.getMarca());
+        assertEquals(1L, guardaRoupaResponse.getId().longValue());
+        assertEquals(PRODUTO_GUARDA_ROUPA_NOME, guardaRoupaResponse.getNome());
+        assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, guardaRoupaResponse.getDescricao());
+        assertEquals(PRODUTO_GUARDA_ROUPA_PRECO, guardaRoupaResponse.getPreco());
+        assertEquals(PRODUTO_GUARDA_ROUPA_MARCA, guardaRoupaResponse.getMarca());
     }
 
     @Test
     @DisplayName("Deve buscar produto por id")
     public void deveBuscarProdutoPorId() throws ProdutoNaoEncontradoException {
-        Long idDoProduto = 10L;
-
-        Produto produto = Produto.builder()
-            .id(idDoProduto)
+        Produto guardaRoupa = Produto.builder()
+            .id(10L)
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
             .build();
 
-        when(produtoRepository.findById(anyLong())).thenReturn(Optional.of(produto));
+        when(produtoRepository.findById(anyLong())).thenReturn(Optional.of(guardaRoupa));
 
-        List<ProdutoResponse> listaDeProdutos = produtoService.buscarPorId(idDoProduto);
+        ProdutoResponse guardaRoupaResponse = produtoService.buscarPorId(10L);
 
-        assertFalse(listaDeProdutos.isEmpty());
-        assertEquals(1, listaDeProdutos.size());
-
-        ProdutoResponse produtoResponse = listaDeProdutos.get(0);
-
-        assertEquals(idDoProduto, produtoResponse.getId());
-        assertEquals(PRODUTO_GUARDA_ROUPA_NOME, produtoResponse.getNome());
-        assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, produtoResponse.getDescricao());
-        assertEquals(PRODUTO_GUARDA_ROUPA_PRECO, produtoResponse.getPreco());
-        assertEquals(PRODUTO_GUARDA_ROUPA_MARCA, produtoResponse.getMarca());
+        assertNotNull(guardaRoupaResponse);
+        assertEquals(10L, guardaRoupaResponse.getId().longValue());
+        assertEquals(PRODUTO_GUARDA_ROUPA_NOME, guardaRoupaResponse.getNome());
+        assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, guardaRoupaResponse.getDescricao());
+        assertEquals(PRODUTO_GUARDA_ROUPA_PRECO, guardaRoupaResponse.getPreco());
+        assertEquals(PRODUTO_GUARDA_ROUPA_MARCA, guardaRoupaResponse.getMarca());
     }
 
     @Test
     @DisplayName("Deve lançar exception para produto não encontrado")
     public void deveLancarExceptionProdutoNaoEncontrado() throws Exception {
-        Long idDoProduto = 99999999L;
+        Long id = 99999999L;
 
-        when(produtoRepository.findById(idDoProduto)).thenReturn(Optional.empty());
+        when(produtoRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ProdutoNaoEncontradoException.class, () -> produtoService.buscarPorId(idDoProduto));
+        assertThrows(ProdutoNaoEncontradoException.class, () -> produtoService.buscarPorId(id));
     }
 
 }
