@@ -46,14 +46,14 @@ ProdutoServiceTest {
     @Test
     @DisplayName("Deve cadastrar produto")
     public void deveCadastrarProduto() {
-        ProdutoRequest produtoRequest = ProdutoRequest.builder()
+        ProdutoRequest produto = ProdutoRequest.builder()
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
             .build();
 
-        Produto produtoEsperado = Produto.builder()
+        Produto guardaRoupa = Produto.builder()
             .id(1L)
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
@@ -61,57 +61,59 @@ ProdutoServiceTest {
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
             .build();
 
-        when(produtoRepository.save(ArgumentMatchers.any(Produto.class))).thenReturn(produtoEsperado);
+        when(produtoRepository.save(ArgumentMatchers.any(Produto.class))).thenReturn(guardaRoupa);
 
-        ProdutoResponse produtoResponse = produtoService.cadastrar(produtoRequest);
+        ProdutoResponse guardaRoupaResponse = produtoService.cadastrar(produto);
 
-        assertEquals(1L, produtoResponse.getId().longValue());
-        assertEquals(PRODUTO_GUARDA_ROUPA_NOME, produtoResponse.getNome());
-        assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, produtoResponse.getDescricao());
-        assertEquals(PRODUTO_GUARDA_ROUPA_PRECO, produtoResponse.getPreco());
-        assertEquals(PRODUTO_GUARDA_ROUPA_MARCA, produtoResponse.getMarca());
+        assertEquals(1L, guardaRoupaResponse.getId().longValue());
+        assertEquals(PRODUTO_GUARDA_ROUPA_NOME, guardaRoupaResponse.getNome());
+        assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, guardaRoupaResponse.getDescricao());
+        assertEquals(PRODUTO_GUARDA_ROUPA_PRECO, guardaRoupaResponse.getPreco());
+        assertEquals(PRODUTO_GUARDA_ROUPA_MARCA, guardaRoupaResponse.getMarca());
     }
 
     @Test
     @DisplayName("Deve listar produtos")
     public void deveListarProdutos() {
-        List<Produto> produtosBanco = new ArrayList<>();
+        List<Produto> produto = new ArrayList<>();
 
-        Produto produto1 = Produto.builder()
+        Produto guardaRoupa = Produto.builder()
             .id(1L)
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
             .build();
-        produtosBanco.add(produto1);
+        produto.add(guardaRoupa);
 
-        Produto produto2 = Produto.builder()
+        Produto televisao = Produto.builder()
             .id(2L)
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
             .preco(PRODUTO_TELEVISAO_PRECO)
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
-        produtosBanco.add(produto2);
+        produto.add(televisao);
 
-        when(produtoRepository.findAll()).thenReturn(produtosBanco);
+        when(produtoRepository.findAll()).thenReturn(produto);
 
-        List<ProdutoResponse> produtoResponse = produtoService.listar();
+        List<ProdutoResponse> produtosResponse = produtoService.listar();
 
-        ProdutoResponse produtoResponse1 = produtoResponse.get(0);
-        assertEquals(1L, produtoResponse1.getId().longValue());
-        assertEquals(PRODUTO_GUARDA_ROUPA_NOME, produtoResponse1.getNome());
-        assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, produtoResponse1.getDescricao());
-        assertEquals(PRODUTO_GUARDA_ROUPA_MARCA, produtoResponse1.getMarca());
-        assertEquals(PRODUTO_GUARDA_ROUPA_PRECO, produtoResponse1.getPreco());
+        assertEquals(2, produtosResponse.size());
 
-        ProdutoResponse produtoResponse2 = produtoResponse.get(1);
-        assertEquals(2L, produtoResponse2.getId().longValue());
-        assertEquals(PRODUTO_TELEVISAO_NOME, produtoResponse2.getNome());
-        assertEquals(PRODUTO_TELEVISAO_DESCRICAO, produtoResponse2.getDescricao());
-        assertEquals(PRODUTO_TELEVISAO_MARCA, produtoResponse2.getMarca());
-        assertEquals(PRODUTO_TELEVISAO_PRECO, produtoResponse2.getPreco());
+        ProdutoResponse guardaRoupaResponse = produtosResponse.get(0);
+        assertEquals(1L, guardaRoupaResponse.getId().longValue());
+        assertEquals(PRODUTO_GUARDA_ROUPA_NOME, guardaRoupaResponse.getNome());
+        assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, guardaRoupaResponse.getDescricao());
+        assertEquals(PRODUTO_GUARDA_ROUPA_MARCA, guardaRoupaResponse.getMarca());
+        assertEquals(PRODUTO_GUARDA_ROUPA_PRECO, guardaRoupaResponse.getPreco());
+
+        ProdutoResponse televisaoResponse = produtosResponse.get(1);
+        assertEquals(2L, televisaoResponse.getId().longValue());
+        assertEquals(PRODUTO_TELEVISAO_NOME, televisaoResponse.getNome());
+        assertEquals(PRODUTO_TELEVISAO_DESCRICAO, televisaoResponse.getDescricao());
+        assertEquals(PRODUTO_TELEVISAO_MARCA, televisaoResponse.getMarca());
+        assertEquals(PRODUTO_TELEVISAO_PRECO, televisaoResponse.getPreco());
     }
 
 }

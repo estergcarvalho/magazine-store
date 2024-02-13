@@ -32,7 +32,7 @@ public class ProdutoController {
         return produtoService.cadastrar(produtoRequest);
     }
 
-    @GetMapping("/lista")
+    @GetMapping
     public List<ProdutoResponse> listar() {
         return produtoService.listar();
     }

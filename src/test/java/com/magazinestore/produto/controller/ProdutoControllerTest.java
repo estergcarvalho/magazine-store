@@ -65,14 +65,14 @@ public class ProdutoControllerTest {
     @Test
     @DisplayName("Deve cadastrar um produto")
     public void deveCadastrarProduto() throws Exception {
-        ProdutoRequest produtoRequest = ProdutoRequest.builder()
+        ProdutoRequest televisaoRequest = ProdutoRequest.builder()
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
             .preco(PRODUTO_TELEVISAO_PRECO)
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 
-        ProdutoResponse produtoResponse = ProdutoResponse.builder()
+        ProdutoResponse televisao = ProdutoResponse.builder()
             .id(1L)
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
@@ -80,12 +80,12 @@ public class ProdutoControllerTest {
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 
-        when(produtoService.cadastrar(any(ProdutoRequest.class))).thenReturn(produtoResponse);
-        when(produtoRepository.save(any())).thenReturn(produtoResponse);
+        when(produtoService.cadastrar(any(ProdutoRequest.class))).thenReturn(televisao);
+        when(produtoRepository.save(any())).thenReturn(televisao);
 
         mockMvc.perform(post("/produtos")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(produtoRequest)))
+                .content(objectMapper.writeValueAsString(televisaoRequest)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(1L))
             .andExpect(jsonPath("$.nome").value(PRODUTO_TELEVISAO_NOME))
@@ -99,26 +99,18 @@ public class ProdutoControllerTest {
     public void deveListarProdutos() throws Exception {
         List<ProdutoResponse> produtoResponse = new ArrayList<>();
 
-        Produto produto1 = Produto.builder()
+        ProdutoResponse guardaRoupa = ProdutoResponse.builder()
             .id(1L)
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
             .build();
-
-        ProdutoResponse produtoResponse1 = ProdutoResponse.builder()
-            .id(produto1.getId())
-            .nome(produto1.getNome())
-            .descricao(produto1.getDescricao())
-            .preco(produto1.getPreco())
-            .marca(produto1.getMarca())
-            .build();
-        produtoResponse.add(produtoResponse1);
+        produtoResponse.add(guardaRoupa);
 
         when(produtoService.listar()).thenReturn(produtoResponse);
 
-        mockMvc.perform(get("/produtos/lista")
+        mockMvc.perform(get("/produtos")
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(1)))
