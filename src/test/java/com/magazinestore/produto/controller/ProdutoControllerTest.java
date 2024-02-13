@@ -3,7 +3,6 @@ package com.magazinestore.produto.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.magazinestore.produto.dto.ProdutoRequest;
 import com.magazinestore.produto.dto.ProdutoResponse;
-import com.magazinestore.produto.model.Produto;
 import com.magazinestore.produto.repository.ProdutoRepository;
 import com.magazinestore.produto.service.ProdutoService;
 import org.junit.Test;
