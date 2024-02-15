@@ -100,7 +100,7 @@ public class ProdutoControllerTest {
     public void deveBuscarProdutoPorId() throws Exception {
         Long idExistente = 5L;
 
-        ProdutoResponse televisao = ProdutoResponse.builder()
+        ProdutoResponse televisaoResponse = ProdutoResponse.builder()
             .id(idExistente)
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
@@ -108,7 +108,7 @@ public class ProdutoControllerTest {
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 
-        Produto produto = Produto.builder()
+        Produto televisao = Produto.builder()
                 .id(idExistente)
                 .nome(PRODUTO_TELEVISAO_NOME)
                 .descricao(PRODUTO_TELEVISAO_DESCRICAO)
@@ -116,8 +116,8 @@ public class ProdutoControllerTest {
                 .marca(PRODUTO_TELEVISAO_MARCA)
                 .build();
 
-        when(produtoRepository.findById(anyLong())).thenReturn(Optional.of(produto));
-        when(produtoService.buscarPorId(anyLong())).thenReturn(televisao);
+        when(produtoRepository.findById(anyLong())).thenReturn(Optional.of(televisao));
+        when(produtoService.buscarPorId(anyLong())).thenReturn(televisaoResponse);
 
         mockMvc.perform(get("/produtos/{id}", idExistente)
                 .contentType(MediaType.APPLICATION_JSON))
