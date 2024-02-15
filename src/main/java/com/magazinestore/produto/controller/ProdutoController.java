@@ -23,9 +23,6 @@ public class ProdutoController {
     @Autowired
     private ProdutoService produtoService;
 
-    @Autowired
-    private ProdutoRepository produtoRepository;
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProdutoResponse cadastrar(@RequestBody @Valid ProdutoRequest produtoRequest) {

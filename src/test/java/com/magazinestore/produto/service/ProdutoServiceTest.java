@@ -75,7 +75,7 @@ ProdutoServiceTest {
     @Test
     @DisplayName("Deve listar produtos")
     public void deveListarProdutos() {
-        List<Produto> produto = new ArrayList<>();
+        List<Produto> produtos = new ArrayList<>();
 
         Produto guardaRoupa = Produto.builder()
             .id(1L)
@@ -84,7 +84,7 @@ ProdutoServiceTest {
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
             .build();
-        produto.add(guardaRoupa);
+        produtos.add(guardaRoupa);
 
         Produto televisao = Produto.builder()
             .id(2L)
@@ -93,9 +93,9 @@ ProdutoServiceTest {
             .preco(PRODUTO_TELEVISAO_PRECO)
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
-        produto.add(televisao);
+        produtos.add(televisao);
 
-        when(produtoRepository.findAll()).thenReturn(produto);
+        when(produtoRepository.findAll()).thenReturn(produtos);
 
         List<ProdutoResponse> produtosResponse = produtoService.listar();
 

@@ -79,8 +79,8 @@ public class ProdutoControllerTest {
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 
-        when(produtoService.cadastrar(any(ProdutoRequest.class))).thenReturn(televisao);
         when(produtoRepository.save(any())).thenReturn(televisao);
+        when(produtoService.cadastrar(any(ProdutoRequest.class))).thenReturn(televisao);
 
         mockMvc.perform(post("/produtos")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -96,7 +96,7 @@ public class ProdutoControllerTest {
     @Test
     @DisplayName("Deve listar produtos")
     public void deveListarProdutos() throws Exception {
-        List<ProdutoResponse> produtoResponse = new ArrayList<>();
+        List<ProdutoResponse> produtosResponse = new ArrayList<>();
 
         ProdutoResponse guardaRoupa = ProdutoResponse.builder()
             .id(1L)
@@ -105,9 +105,9 @@ public class ProdutoControllerTest {
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
             .build();
-        produtoResponse.add(guardaRoupa);
+        produtosResponse.add(guardaRoupa);
 
-        when(produtoService.listar()).thenReturn(produtoResponse);
+        when(produtoService.listar()).thenReturn(produtosResponse);
 
         mockMvc.perform(get("/produtos")
                 .contentType(MediaType.APPLICATION_JSON))
