@@ -2,10 +2,8 @@ package com.magazinestore.produto.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.magazinestore.produto.dto.ProdutoRequest;
-import com.magazinestore.produto.dto.ProdutoResponse;
 import com.magazinestore.produto.model.Produto;
 import com.magazinestore.produto.repository.ProdutoRepository;
-import com.magazinestore.produto.service.ProdutoService;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
@@ -40,9 +38,6 @@ public class ProdutoControllerTest {
     private ProdutoController produtoController;
 
     @MockBean
-    private ProdutoService produtoService;
-
-    @MockBean
     private ProdutoRepository produtoRepository;
 
     @Autowired
@@ -73,7 +68,7 @@ public class ProdutoControllerTest {
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 
-        ProdutoResponse televisao = ProdutoResponse.builder()
+        Produto televisao = Produto.builder()
             .id(id)
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
@@ -82,7 +77,6 @@ public class ProdutoControllerTest {
             .build();
 
         when(produtoRepository.save(any())).thenReturn(televisao);
-        when(produtoService.cadastrar(any(ProdutoRequest.class))).thenReturn(televisao);
 
         mockMvc.perform(post("/produtos")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -100,14 +94,6 @@ public class ProdutoControllerTest {
     public void deveBuscarProdutoPorId() throws Exception {
         Long idExistente = 5L;
 
-        ProdutoResponse televisaoResponse = ProdutoResponse.builder()
-            .id(idExistente)
-            .nome(PRODUTO_TELEVISAO_NOME)
-            .descricao(PRODUTO_TELEVISAO_DESCRICAO)
-            .preco(PRODUTO_TELEVISAO_PRECO)
-            .marca(PRODUTO_TELEVISAO_MARCA)
-            .build();
-
         Produto televisao = Produto.builder()
                 .id(idExistente)
                 .nome(PRODUTO_TELEVISAO_NOME)
@@ -117,7 +103,6 @@ public class ProdutoControllerTest {
                 .build();
 
         when(produtoRepository.findById(anyLong())).thenReturn(Optional.of(televisao));
-        when(produtoService.buscarPorId(anyLong())).thenReturn(televisaoResponse);
 
         mockMvc.perform(get("/produtos/{id}", idExistente)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -132,7 +117,7 @@ public class ProdutoControllerTest {
     @Test
     @DisplayName("Deve lançar exception para produto não encontrado")
     public void deveLancarExceptionProdutoNaoEncontrado() throws Exception {
-        Long idNaoExistente = null;
+        Long idNaoExistente = 999999L;
 
         when(produtoRepository.findById(idNaoExistente)).thenReturn(Optional.empty());
 

@@ -21,7 +21,6 @@ public class ProdutoController {
     @Autowired
     private ProdutoService produtoService;
 
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProdutoResponse cadastrar(@RequestBody @Valid ProdutoRequest produtoRequest) {
