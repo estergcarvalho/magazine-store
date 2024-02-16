@@ -2,6 +2,7 @@ package com.magazinestore.produto.service;
 
 import com.magazinestore.produto.dto.ProdutoRequest;
 import com.magazinestore.produto.dto.ProdutoResponse;
+import com.magazinestore.produto.exception.ProdutoNaoEncontradoException;
 import com.magazinestore.produto.model.Produto;
 import com.magazinestore.produto.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProdutoService {
@@ -53,6 +55,25 @@ public class ProdutoService {
         });
 
         return produtosResponse;
+
+    }
+
+    public ProdutoResponse buscarPorId(Long id) throws ProdutoNaoEncontradoException {
+        Optional<Produto> produtoOptional = produtoRepository.findById(id);
+
+        if (produtoOptional.isEmpty()) {
+            throw new ProdutoNaoEncontradoException();
+        }
+
+        Produto produto = produtoOptional.get();
+
+        return ProdutoResponse.builder()
+                .id(produto.getId())
+                .nome(produto.getNome())
+                .descricao(produto.getDescricao())
+                .preco(produto.getPreco())
+                .marca(produto.getMarca())
+                .build();
     }
 
 }

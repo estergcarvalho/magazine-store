@@ -2,9 +2,8 @@ package com.magazinestore.produto.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.magazinestore.produto.dto.ProdutoRequest;
-import com.magazinestore.produto.dto.ProdutoResponse;
+import com.magazinestore.produto.model.Produto;
 import com.magazinestore.produto.repository.ProdutoRepository;
-import com.magazinestore.produto.service.ProdutoService;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
@@ -19,11 +18,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,9 +39,6 @@ public class ProdutoControllerTest {
 
     @InjectMocks
     private ProdutoController produtoController;
-
-    @MockBean
-    private ProdutoService produtoService;
 
     @MockBean
     private ProdutoRepository produtoRepository;
@@ -64,6 +62,8 @@ public class ProdutoControllerTest {
     @Test
     @DisplayName("Deve cadastrar um produto")
     public void deveCadastrarProduto() throws Exception {
+        Long id = 1L;
+
         ProdutoRequest televisaoRequest = ProdutoRequest.builder()
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
@@ -71,8 +71,8 @@ public class ProdutoControllerTest {
             .marca(PRODUTO_TELEVISAO_MARCA)
             .build();
 
-        ProdutoResponse televisao = ProdutoResponse.builder()
-            .id(1L)
+        Produto televisao = Produto.builder()
+            .id(id)
             .nome(PRODUTO_TELEVISAO_NOME)
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
             .preco(PRODUTO_TELEVISAO_PRECO)
@@ -80,13 +80,12 @@ public class ProdutoControllerTest {
             .build();
 
         when(produtoRepository.save(any())).thenReturn(televisao);
-        when(produtoService.cadastrar(any(ProdutoRequest.class))).thenReturn(televisao);
 
         mockMvc.perform(post("/produtos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(televisaoRequest)))
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.id").value(1L))
+            .andExpect(jsonPath("$.id").value(id))
             .andExpect(jsonPath("$.nome").value(PRODUTO_TELEVISAO_NOME))
             .andExpect(jsonPath("$.descricao").value(PRODUTO_TELEVISAO_DESCRICAO))
             .andExpect(jsonPath("$.preco").value(PRODUTO_TELEVISAO_PRECO))
@@ -96,28 +95,80 @@ public class ProdutoControllerTest {
     @Test
     @DisplayName("Deve listar produtos")
     public void deveListarProdutos() throws Exception {
-        List<ProdutoResponse> produtosResponse = new ArrayList<>();
+        Long idGuardaRoupa = 1L;
+        Long idTelevisao = 2L;
 
-        ProdutoResponse guardaRoupa = ProdutoResponse.builder()
-            .id(1L)
+        Produto guardaRoupa = Produto.builder()
+            .id(idGuardaRoupa)
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
             .build();
-        produtosResponse.add(guardaRoupa);
 
-        when(produtoService.listar()).thenReturn(produtosResponse);
+        Produto televisao = Produto.builder()
+            .id(idTelevisao)
+            .nome(PRODUTO_TELEVISAO_NOME)
+            .descricao(PRODUTO_TELEVISAO_DESCRICAO)
+            .preco(PRODUTO_TELEVISAO_PRECO)
+            .marca(PRODUTO_TELEVISAO_MARCA)
+            .build();
+
+        List<Produto> produtos = Arrays.asList(guardaRoupa, televisao);
+
+        when(produtoRepository.findAll()).thenReturn(produtos);
 
         mockMvc.perform(get("/produtos")
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$[0].id").value(1L))
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].id").value(idGuardaRoupa))
             .andExpect(jsonPath("$[0].nome").value(PRODUTO_GUARDA_ROUPA_NOME))
             .andExpect(jsonPath("$[0].descricao").value(PRODUTO_GUARDA_ROUPA_DESCRICAO))
             .andExpect(jsonPath("$[0].preco").value(PRODUTO_GUARDA_ROUPA_PRECO))
-            .andExpect(jsonPath("$[0].marca").value(PRODUTO_GUARDA_ROUPA_MARCA));
+            .andExpect(jsonPath("$[0].marca").value(PRODUTO_GUARDA_ROUPA_MARCA))
+            .andExpect(jsonPath("$[1].id").value(idTelevisao))
+            .andExpect(jsonPath("$[1].nome").value(PRODUTO_TELEVISAO_NOME))
+            .andExpect(jsonPath("$[1].descricao").value(PRODUTO_TELEVISAO_DESCRICAO))
+            .andExpect(jsonPath("$[1].preco").value(PRODUTO_TELEVISAO_PRECO))
+            .andExpect(jsonPath("$[1].marca").value(PRODUTO_TELEVISAO_MARCA));
+    }
+
+    @Test
+    @DisplayName("Deve buscar produto por id")
+    public void deveBuscarProdutoPorId() throws Exception {
+        Long idTelevisao = 5L;
+
+        Produto televisao = Produto.builder()
+            .id(idTelevisao)
+            .nome(PRODUTO_TELEVISAO_NOME)
+            .descricao(PRODUTO_TELEVISAO_DESCRICAO)
+            .preco(PRODUTO_TELEVISAO_PRECO)
+            .marca(PRODUTO_TELEVISAO_MARCA)
+            .build();
+
+        when(produtoRepository.findById(anyLong())).thenReturn(Optional.of(televisao));
+
+        mockMvc.perform(get("/produtos/{id}", idTelevisao)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(idTelevisao))
+            .andExpect(jsonPath("$.nome").value(PRODUTO_TELEVISAO_NOME))
+            .andExpect(jsonPath("$.descricao").value(PRODUTO_TELEVISAO_DESCRICAO))
+            .andExpect(jsonPath("$.preco").value(PRODUTO_TELEVISAO_PRECO))
+            .andExpect(jsonPath("$.marca").value(PRODUTO_TELEVISAO_MARCA));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception para produto não encontrado")
+    public void deveLancarExceptionProdutoNaoEncontrado() throws Exception {
+        Long idNaoExistente = 999999L;
+
+        when(produtoRepository.findById(idNaoExistente)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/produtos/{id}", idNaoExistente)
+                .contentType("application/json"))
+            .andExpect(status().isNotFound());
     }
 
 }
