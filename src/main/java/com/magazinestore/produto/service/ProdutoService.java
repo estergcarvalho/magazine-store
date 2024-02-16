@@ -8,6 +8,8 @@ import com.magazinestore.produto.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,6 +37,27 @@ public class ProdutoService {
             .build();
     }
 
+    public List<ProdutoResponse> listar() {
+        List<Produto> produtos = produtoRepository.findAll();
+
+        List<ProdutoResponse> produtosResponse = new ArrayList<>();
+
+        produtos.forEach(produto -> {
+            ProdutoResponse produtoResponse = ProdutoResponse.builder()
+                .id(produto.getId())
+                .nome(produto.getNome())
+                .descricao(produto.getDescricao())
+                .marca(produto.getMarca())
+                .preco(produto.getPreco())
+                .build();
+
+            produtosResponse.add(produtoResponse);
+        });
+
+        return produtosResponse;
+
+    }
+
     public ProdutoResponse buscarPorId(Long id) throws ProdutoNaoEncontradoException {
         Optional<Produto> produtoOptional = produtoRepository.findById(id);
 
@@ -45,12 +68,12 @@ public class ProdutoService {
         Produto produto = produtoOptional.get();
 
         return ProdutoResponse.builder()
-            .id(produto.getId())
-            .nome(produto.getNome())
-            .descricao(produto.getDescricao())
-            .preco(produto.getPreco())
-            .marca(produto.getMarca())
-            .build();
+                .id(produto.getId())
+                .nome(produto.getNome())
+                .descricao(produto.getDescricao())
+                .preco(produto.getPreco())
+                .marca(produto.getMarca())
+                .build();
     }
 
 }

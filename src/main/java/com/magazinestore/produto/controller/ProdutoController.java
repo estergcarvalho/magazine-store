@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/produtos")
 public class ProdutoController {
@@ -25,6 +27,11 @@ public class ProdutoController {
     @ResponseStatus(HttpStatus.CREATED)
     public ProdutoResponse cadastrar(@RequestBody @Valid ProdutoRequest produtoRequest) {
         return produtoService.cadastrar(produtoRequest);
+    }
+
+    @GetMapping
+    public List<ProdutoResponse> listar() {
+        return produtoService.listar();
     }
 
     @GetMapping("/{id}")
