@@ -10,12 +10,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -37,9 +37,9 @@ public class ProdutoController {
         }
     )
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ProdutoResponse cadastrar(@RequestBody @Valid ProdutoRequest produtoRequest) {
-        return produtoService.cadastrar(produtoRequest);
+    public ResponseEntity<ProdutoResponse> cadastrar(@RequestBody @Valid ProdutoRequest produtoRequest) {
+        ProdutoResponse produtoResponse = produtoService.cadastrar(produtoRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(produtoResponse);
     }
 
     @Operation(
@@ -47,8 +47,9 @@ public class ProdutoController {
         description = "Retorna uma lista de todos os produtos cadastrados"
     )
     @GetMapping
-    public List<ProdutoResponse> listar() {
-        return produtoService.listar();
+    public ResponseEntity<List<ProdutoResponse>> listar() {
+        List<ProdutoResponse> produtos = produtoService.listar();
+        return ResponseEntity.ok(produtos);
     }
 
     @Operation(
@@ -60,8 +61,9 @@ public class ProdutoController {
         @ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
     @GetMapping("/{id}")
-    public ProdutoResponse buscarPorId(@PathVariable Long id) {
-        return produtoService.buscarPorId(id);
+    public ResponseEntity<ProdutoResponse> buscarPorId(@PathVariable Long id) {
+        ProdutoResponse produto = produtoService.buscarPorId(id);
+        return ResponseEntity.ok(produto);
     }
 
 }
