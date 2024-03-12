@@ -1,7 +1,9 @@
 package com.magazinestore.produto.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.magazinestore.produto.dto.CaracteristicaRequest;
 import com.magazinestore.produto.dto.ProdutoRequest;
+import com.magazinestore.produto.model.Caracteristica;
 import com.magazinestore.produto.model.Produto;
 import com.magazinestore.produto.repository.ProdutoRepository;
 import org.junit.Test;
@@ -16,20 +18,28 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -59,6 +69,9 @@ public class ProdutoControllerTest {
     private static final BigDecimal PRODUTO_TELEVISAO_PRECO = new BigDecimal("2599.0");
     private static final String PRODUTO_TELEVISAO_MARCA = "LG";
 
+    private static final String CARACTERISTICA_NOME = "Dimensao:";
+    private static final String CARACTERISTICA_DESCRICAO = "Largura: 1m Altura: 80cm. Profundidade: 60cm";
+
     @Test
     @DisplayName("Deve cadastrar um produto")
     public void deveCadastrarProduto() throws Exception {
@@ -69,6 +82,13 @@ public class ProdutoControllerTest {
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
             .preco(PRODUTO_TELEVISAO_PRECO)
             .marca(PRODUTO_TELEVISAO_MARCA)
+            .caracteristicas(new ArrayList<>
+                (Collections.singletonList(CaracteristicaRequest
+                    .builder()
+                    .nome(CARACTERISTICA_NOME)
+                    .descricao(CARACTERISTICA_DESCRICAO)
+                    .build()
+                )))
             .build();
 
         Produto televisao = Produto.builder()
@@ -77,6 +97,14 @@ public class ProdutoControllerTest {
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
             .preco(PRODUTO_TELEVISAO_PRECO)
             .marca(PRODUTO_TELEVISAO_MARCA)
+
+            .caracteristica(new ArrayList<>(Collections.singletonList(
+                Caracteristica.builder()
+                    .id(1L)
+                    .nome(CARACTERISTICA_NOME)
+                    .descricao(CARACTERISTICA_DESCRICAO)
+                    .build()
+            )))
             .build();
 
         when(produtoRepository.save(any())).thenReturn(televisao);
@@ -89,7 +117,10 @@ public class ProdutoControllerTest {
             .andExpect(jsonPath("$.nome").value(PRODUTO_TELEVISAO_NOME))
             .andExpect(jsonPath("$.descricao").value(PRODUTO_TELEVISAO_DESCRICAO))
             .andExpect(jsonPath("$.preco").value(PRODUTO_TELEVISAO_PRECO))
-            .andExpect(jsonPath("$.marca").value(PRODUTO_TELEVISAO_MARCA));
+            .andExpect(jsonPath("$.marca").value(PRODUTO_TELEVISAO_MARCA))
+            .andExpect(jsonPath("$.caracteristicas[0].id").exists())
+            .andExpect(jsonPath("$.caracteristicas[0].nome").value(CARACTERISTICA_NOME))
+            .andExpect(jsonPath("$.caracteristicas[0].descricao").value(CARACTERISTICA_DESCRICAO));
     }
 
     @Test
@@ -168,6 +199,72 @@ public class ProdutoControllerTest {
 
         mockMvc.perform(get("/produtos/{id}", idNaoExistente)
                 .contentType("application/json"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve retornar status 204 quando produto for atualizado")
+    public void deveAtualizarUmProduto() throws Exception {
+        Long guardaRoupaId = 3L;
+
+        Produto produtoExistente = Produto.builder()
+            .id(guardaRoupaId)
+            .nome(PRODUTO_GUARDA_ROUPA_NOME)
+            .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
+            .preco(PRODUTO_GUARDA_ROUPA_PRECO)
+            .marca(PRODUTO_GUARDA_ROUPA_MARCA)
+            .caracteristica(new ArrayList<>())
+            .build();
+
+        ProdutoRequest guardaRoupaRequest = ProdutoRequest.builder()
+            .nome(PRODUTO_GUARDA_ROUPA_NOME)
+            .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
+            .preco(PRODUTO_GUARDA_ROUPA_PRECO)
+            .marca(PRODUTO_GUARDA_ROUPA_MARCA)
+            .caracteristicas(new ArrayList<>())
+            .build();
+
+        CaracteristicaRequest caracteristicaRequest = CaracteristicaRequest.builder()
+            .nome(CARACTERISTICA_NOME)
+            .descricao(CARACTERISTICA_DESCRICAO)
+            .build();
+        guardaRoupaRequest.getCaracteristicas().add(caracteristicaRequest);
+
+        when(produtoRepository.findById(guardaRoupaId)).thenReturn(Optional.of(produtoExistente));
+
+        Produto produtoAtualizado = Produto.builder()
+            .nome(guardaRoupaRequest.getNome())
+            .descricao(guardaRoupaRequest.getDescricao())
+            .preco(guardaRoupaRequest.getPreco())
+            .marca(guardaRoupaRequest.getMarca())
+            .caracteristica(guardaRoupaRequest.getCaracteristicas()
+                .stream()
+                .map(caracteristica -> Caracteristica
+                    .builder()
+                    .nome(caracteristica.getNome())
+                    .descricao(caracteristica.getDescricao())
+                    .build())
+                .collect(Collectors.toList()))
+            .build();
+
+        when(produtoRepository.save(any(Produto.class))).thenReturn(produtoAtualizado);
+
+        mockMvc.perform(put("/produtos/{produtoId}", guardaRoupaId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(guardaRoupaRequest)))
+            .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exception para produto não encontrado")
+    public void deveLancarExceptionProdutoNotFound() throws Exception {
+        Long idNaoExistente = 789L;
+
+        when(produtoRepository.findById(idNaoExistente)).thenReturn(Optional.empty());
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/produtos/{produtoId}", idNaoExistente)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
             .andExpect(status().isNotFound());
     }
 

@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,6 +65,20 @@ public class ProdutoController {
     public ResponseEntity<ProdutoResponse> buscarPorId(@PathVariable Long id) {
         ProdutoResponse produto = produtoService.buscarPorId(id);
         return ResponseEntity.ok(produto);
+    }
+
+    @Operation(
+        summary = "Atualizar um produto",
+        description = "Atualiza os detalhes de um produto com base no ID fornecido"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Produto atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado")
+    })
+    @PutMapping("/{produtoId}")
+    public ResponseEntity<ProdutoResponse> atualizarProduto(@PathVariable Long produtoId, @RequestBody ProdutoRequest produtoRequest) {
+        produtoService.atualizarProduto(produtoId, produtoRequest);
+        return ResponseEntity.noContent().build();
     }
 
 }
