@@ -16,12 +16,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -169,6 +171,29 @@ public class ProdutoControllerTest {
         mockMvc.perform(get("/produtos/{id}", idNaoExistente)
                 .contentType("application/json"))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve buscar produto por texto e retornar sucesso")
+    public void deveBuscarProdutoPorTextoERetornarSucesso() throws Exception {
+        String nome = "iPad";
+        String descricao = "miNi";
+
+        Produto produto = Produto.builder()
+            .nome(nome)
+            .descricao(descricao)
+            .build();
+
+        when(produtoRepository
+            .findByNomeIgnoreCaseContainingOrDescricaoIgnoreCaseContaining(nome, descricao)).thenReturn(List.of(produto));
+
+        mockMvc.perform(get("/produtos/pesquisa")
+                .param("nome", nome)
+                .param("descricao", descricao)
+                .contentType("application/json"))
+            .andExpect(status().isOk())
+            .andExpect((ResultMatcher) jsonPath("$[0].nome", is(nome)))
+            .andExpect((ResultMatcher) jsonPath("$[0].descricao", is(descricao)));
     }
 
 }

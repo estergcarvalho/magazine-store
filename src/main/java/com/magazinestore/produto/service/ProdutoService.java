@@ -68,12 +68,23 @@ public class ProdutoService {
         Produto produto = produtoOptional.get();
 
         return ProdutoResponse.builder()
-                .id(produto.getId())
-                .nome(produto.getNome())
-                .descricao(produto.getDescricao())
-                .preco(produto.getPreco())
-                .marca(produto.getMarca())
-                .build();
+            .id(produto.getId())
+            .nome(produto.getNome())
+            .descricao(produto.getDescricao())
+            .preco(produto.getPreco())
+            .marca(produto.getMarca())
+            .build();
+    }
+
+    public List<Produto> buscarProdutosPorTexto(String nome, String descricao) {
+        List<Produto> produto = produtoRepository
+            .findByNomeIgnoreCaseContainingOrDescricaoIgnoreCaseContaining(nome, descricao);
+
+        if (produto.isEmpty()) {
+            throw new ProdutoNaoEncontradoException();
+        }
+
+        return produto;
     }
 
 }

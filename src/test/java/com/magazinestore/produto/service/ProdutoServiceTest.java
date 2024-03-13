@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -152,6 +153,42 @@ ProdutoServiceTest {
         when(produtoRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(ProdutoNaoEncontradoException.class, () -> produtoService.buscarPorId(id));
+    }
+
+    @Test
+    @DisplayName("Deve buscar produto por texto e retornar sucesso")
+    public void deveBuscarProdutoPorTextoERetornarSucesso() throws Exception {
+        String nome = "ipaD";
+        String descricao = "mIni";
+
+        Produto produto = Produto.builder()
+            .nome(nome)
+            .descricao(descricao)
+            .build();
+
+        when(produtoRepository.findByNomeIgnoreCaseContainingOrDescricaoIgnoreCaseContaining(nome, descricao))
+            .thenReturn(List.of(produto));
+
+        List<Produto> produtoEncontrado = produtoService.buscarProdutosPorTexto(nome, descricao);
+
+        Produto produtoRetornado = produtoEncontrado.get(0);
+
+        assertEquals(nome, produtoRetornado.getNome());
+        assertEquals(descricao, produtoRetornado.getDescricao());
+        assertNotNull(produtoRetornado);
+
+    }
+
+    @Test
+    @DisplayName("Deve lancar exception para produto não localizado")
+    public void deveLancarExceptionParaProdutoNaoLocalizado(){
+        String nome = "nome produto inexistente";
+        String descricao = "descricao produto inexistente";
+
+        when(produtoRepository.findByNomeIgnoreCaseContainingOrDescricaoIgnoreCaseContaining(nome, descricao))
+            .thenReturn(Collections.emptyList());
+
+        assertThrows(ProdutoNaoEncontradoException.class, () -> produtoService.buscarProdutosPorTexto(nome, descricao));
     }
 
 }
