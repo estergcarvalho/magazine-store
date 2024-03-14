@@ -77,14 +77,14 @@ public class ProdutoService {
     }
 
     public List<Produto> buscarProdutosPorTexto(String nome, String descricao) {
-        List<Produto> produto = produtoRepository
+        List<Produto> produtos = produtoRepository
             .findByNomeIgnoreCaseContainingOrDescricaoIgnoreCaseContaining(nome, descricao);
 
-        if (produto.isEmpty()) {
+        if (produtos.isEmpty()) {
             throw new ProdutoNaoEncontradoException();
         }
 
-        return produto;
+        return produtos;
     }
 
 }

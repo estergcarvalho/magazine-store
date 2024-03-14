@@ -41,6 +41,7 @@ public class ProdutoController {
     @PostMapping
     public ResponseEntity<ProdutoResponse> cadastrar(@RequestBody @Valid ProdutoRequest produtoRequest) {
         ProdutoResponse produtoResponse = produtoService.cadastrar(produtoRequest);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(produtoResponse);
     }
 
@@ -51,6 +52,7 @@ public class ProdutoController {
     @GetMapping
     public ResponseEntity<List<ProdutoResponse>> listar() {
         List<ProdutoResponse> produtos = produtoService.listar();
+
         return ResponseEntity.ok(produtos);
     }
 
@@ -65,12 +67,13 @@ public class ProdutoController {
     @GetMapping("/{id}")
     public ResponseEntity<ProdutoResponse> buscarPorId(@PathVariable Long id) {
         ProdutoResponse produto = produtoService.buscarPorId(id);
+
         return ResponseEntity.ok(produto);
     }
 
     @Operation(
         summary = "Retorna produto dado nome ou descrição",
-        description = "Retorna o produto com base no nome ou descrição fornecedo"
+        description = "Retorna o produto com base no nome ou descrição fornecido"
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Produto encontrado"),
@@ -80,6 +83,7 @@ public class ProdutoController {
     public ResponseEntity<List<Produto>> buscarProdutoPorTexto(@RequestParam(required = false) String nome,
                                                                @RequestParam(required = false) String descricao) {
         List<Produto> produtos = produtoService.buscarProdutosPorTexto(nome, descricao);
+        
         return ResponseEntity.ok(produtos);
     }
 

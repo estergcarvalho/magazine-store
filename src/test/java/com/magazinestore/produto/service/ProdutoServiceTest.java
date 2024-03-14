@@ -30,8 +30,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class
-ProdutoServiceTest {
+public class ProdutoServiceTest {
 
     @InjectMocks
     private ProdutoService produtoService;
@@ -147,7 +146,7 @@ ProdutoServiceTest {
 
     @Test
     @DisplayName("Deve lançar exception para produto não encontrado")
-    public void deveLancarExceptionProdutoNaoEncontrado() throws Exception {
+    public void deveLancarExceptionProdutoNaoEncontrado() {
         Long id = 99999999L;
 
         when(produtoRepository.findById(id)).thenReturn(Optional.empty());
@@ -157,7 +156,7 @@ ProdutoServiceTest {
 
     @Test
     @DisplayName("Deve buscar produto por texto e retornar sucesso")
-    public void deveBuscarProdutoPorTextoERetornarSucesso() throws Exception {
+    public void deveBuscarProdutoPorTextoERetornarSucesso() {
         String nome = "ipaD";
         String descricao = "mIni";
 
@@ -181,7 +180,7 @@ ProdutoServiceTest {
 
     @Test
     @DisplayName("Deve lancar exception para produto não localizado")
-    public void deveLancarExceptionParaProdutoNaoLocalizado(){
+    public void deveLancarExceptionParaProdutoNaoLocalizado() {
         String nome = "nome produto inexistente";
         String descricao = "descricao produto inexistente";
 
