@@ -9,6 +9,7 @@ import com.magazinestore.produto.model.Produto;
 import com.magazinestore.produto.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,23 +27,20 @@ public class ProdutoService {
             .descricao(produtoRequest.getDescricao())
             .preco(produtoRequest.getPreco())
             .marca(produtoRequest.getMarca())
+            .caracteristica(new ArrayList<>())
             .build();
 
-        List<Caracteristica> caracteristicasDoProduto = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(produtoRequest.getCaracteristicas())) {
+            produtoRequest.getCaracteristicas().forEach(caracteristicaRequest -> {
+                Caracteristica caracteristica = Caracteristica.builder()
+                    .nome(caracteristicaRequest.getNome())
+                    .descricao(caracteristicaRequest.getDescricao())
+                    .produto(produto)
+                    .build();
 
-        produtoRequest.getCaracteristicas().forEach(caracteristicaRequest -> {
-            if (caracteristicaRequest.getNome() != null && caracteristicaRequest.getDescricao() != null) {
-                Caracteristica novaCaracteristica = new Caracteristica();
-                novaCaracteristica.setNome(caracteristicaRequest.getNome());
-                novaCaracteristica.setDescricao(caracteristicaRequest.getDescricao());
-                novaCaracteristica.setProduto(produto);
-                caracteristicasDoProduto.add(novaCaracteristica);
-            } else {
-                throw new IllegalArgumentException();
-            }
-        });
-
-        produto.setCaracteristica(caracteristicasDoProduto);
+                produto.getCaracteristica().add(caracteristica);
+            });
+        }
 
         Produto produtoSalvo = produtoRepository.save(produto);
 
@@ -65,6 +63,7 @@ public class ProdutoService {
             .caracteristicas(caracteristicasResponse)
             .build();
     }
+
 
     public List<ProdutoResponse> listar() {
         List<Produto> produtos = produtoRepository.findAll();
@@ -114,16 +113,15 @@ public class ProdutoService {
 
         Produto produtoExistente = produto.get();
 
-        if (produtoRequest.getCaracteristicas() != null) {
+        if (!CollectionUtils.isEmpty(produtoRequest.getCaracteristicas())) {
             produtoRequest.getCaracteristicas().forEach(caracteristicaRequest -> {
-                Caracteristica caracteristica = Caracteristica
-                    .builder()
+                Caracteristica caracteristica = Caracteristica.builder()
                     .nome(caracteristicaRequest.getNome())
                     .descricao(caracteristicaRequest.getDescricao())
                     .produto(produtoExistente)
                     .build();
-                produtoExistente.getCaracteristica().add(caracteristica);
 
+                produtoExistente.getCaracteristica().add(caracteristica);
             });
         }
 

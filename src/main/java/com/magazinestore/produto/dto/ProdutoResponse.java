@@ -26,7 +26,7 @@ public class ProdutoResponse {
     @Schema(description = "Marca do produto", example = "Apple")
     private String marca;
 
-    @Schema(description = "Lista caracteristicas", example = "cor, dimensão, material")
+    @Schema(description = "caracteristicas do produto", example = "cor, dimensão, material")
     private List<CaracteristicaResponse> caracteristicas;
 
 }

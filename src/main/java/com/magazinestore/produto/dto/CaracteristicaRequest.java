@@ -9,12 +9,12 @@ import lombok.Getter;
 @Getter
 public class CaracteristicaRequest {
 
-    @Schema(description = "Nome do produto", example = "Televisão")
-    @NotBlank(message = "Nome do produto não deve ser nulo ou vazio")
+    @Schema(description = "Nome da caracteristica", example = "Cor")
+    @NotBlank(message = "Nome da caracteristica do produto não deve ser nulo ou vazio")
     private String nome;
 
-    @Schema(description = "Descrição do produto", example = "Televisao com resolução 4k")
-    @NotBlank(message = "Descrição do produto não deve ser nulo ou vazia")
+    @Schema(description = "Descrição da caracteristica", example = "Rosa")
+    @NotBlank(message = "Descrição da caracteristica do produto não deve ser nulo ou vazia")
     private String descricao;
 
 }

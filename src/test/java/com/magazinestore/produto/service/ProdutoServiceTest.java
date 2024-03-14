@@ -193,7 +193,7 @@ public class ProdutoServiceTest {
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
-            .caracteristica(Collections.emptyList())
+            .caracteristica(new ArrayList<>())
             .build();
 
         ProdutoRequest guardaRoupaRequest = ProdutoRequest.builder()
@@ -212,23 +212,23 @@ public class ProdutoServiceTest {
         when(produtoRepository.findById(PRODUTO_GUARDA_ROUPA_ID)).thenReturn(Optional.of(guardaRoupaExistente));
         when(produtoRepository.save(ArgumentMatchers.any())).thenReturn(guardaRoupaExistente);
 
-        ProdutoResponse atualizarProduto = produtoService.atualizar(PRODUTO_GUARDA_ROUPA_ID, guardaRoupaRequest);
+        ProdutoResponse produtoAtualizado = produtoService.atualizar(PRODUTO_GUARDA_ROUPA_ID, guardaRoupaRequest);
 
         ProdutoResponse guardaRoupaResponse = ProdutoResponse.builder()
-            .id(atualizarProduto.getId())
+            .id(produtoAtualizado.getId())
             .nome(guardaRoupaRequest.getNome())
             .descricao(guardaRoupaRequest.getDescricao())
             .preco(guardaRoupaRequest.getPreco())
             .marca(guardaRoupaRequest.getMarca())
-            .caracteristicas(atualizarProduto.getCaracteristicas())
+            .caracteristicas(produtoAtualizado.getCaracteristicas())
             .build();
 
-        assertEquals(guardaRoupaResponse.getId(), atualizarProduto.getId());
-        assertEquals(guardaRoupaResponse.getNome(), atualizarProduto.getNome());
-        assertEquals(guardaRoupaResponse.getDescricao(), atualizarProduto.getDescricao());
-        assertEquals(guardaRoupaResponse.getPreco(), atualizarProduto.getPreco());
-        assertEquals(guardaRoupaResponse.getMarca(), atualizarProduto.getMarca());
-        assertEquals(guardaRoupaResponse.getCaracteristicas(), atualizarProduto.getCaracteristicas());
+        assertEquals(guardaRoupaResponse.getId(), produtoAtualizado.getId());
+        assertEquals(guardaRoupaResponse.getNome(), produtoAtualizado.getNome());
+        assertEquals(guardaRoupaResponse.getDescricao(), produtoAtualizado.getDescricao());
+        assertEquals(guardaRoupaResponse.getPreco(), produtoAtualizado.getPreco());
+        assertEquals(guardaRoupaResponse.getMarca(), produtoAtualizado.getMarca());
+        assertEquals(guardaRoupaResponse.getCaracteristicas(), produtoAtualizado.getCaracteristicas());
 
     }
 

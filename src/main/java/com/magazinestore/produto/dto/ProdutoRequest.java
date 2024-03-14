@@ -33,7 +33,7 @@ public class ProdutoRequest {
     @NotBlank(message = "Marca do produto não deve ser nulo ou vazia")
     private String marca;
 
-    @Schema(description = "Característica")
+    @Schema(description = "Caracteristicas do produto")
     private List<CaracteristicaRequest> caracteristicas;
 
 }

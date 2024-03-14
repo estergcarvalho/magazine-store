@@ -10,13 +10,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CaracteristicaResponse {
 
-    @Schema(description = "Id produto", example = "1")
+    @Schema(description = "Id caracteristica", example = "1")
     private Long id;
 
-    @Schema(description = "Nome do produto", example = "Celular")
+    @Schema(description = "Nome da caracteristica", example = "Cor")
     private String nome;
 
-    @Schema(description = "Descrição do produto", example = "Este celular possui 128gb e câmera 4k")
+    @Schema(description = "Descrição da caracteristica", example = "Prata")
     private String descricao;
 
 }
