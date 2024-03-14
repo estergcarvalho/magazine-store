@@ -105,13 +105,13 @@ public class ProdutoService {
     }
 
     public ProdutoResponse atualizar(Long produtoId, ProdutoRequest produtoRequest) {
-        Optional<Produto> produto = produtoRepository.findById(produtoId);
+        Optional<Produto> produtos = produtoRepository.findById(produtoId);
 
-        if (produto.isEmpty()) {
+        if (produtos.isEmpty()) {
             throw new ProdutoNaoEncontradoException();
         }
 
-        Produto produtoExistente = produto.get();
+        Produto produtoExistente = produtos.get();
 
         if (!CollectionUtils.isEmpty(produtoRequest.getCaracteristicas())) {
             produtoRequest.getCaracteristicas().forEach(caracteristicaRequest -> {
