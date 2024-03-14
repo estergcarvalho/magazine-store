@@ -40,6 +40,7 @@ public class ProdutoController {
     @PostMapping
     public ResponseEntity<ProdutoResponse> cadastrar(@RequestBody @Valid ProdutoRequest produtoRequest) {
         ProdutoResponse produtoResponse = produtoService.cadastrar(produtoRequest);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(produtoResponse);
     }
 
@@ -50,6 +51,7 @@ public class ProdutoController {
     @GetMapping
     public ResponseEntity<List<ProdutoResponse>> listar() {
         List<ProdutoResponse> produtos = produtoService.listar();
+
         return ResponseEntity.ok(produtos);
     }
 
@@ -64,6 +66,7 @@ public class ProdutoController {
     @GetMapping("/{id}")
     public ResponseEntity<ProdutoResponse> buscarPorId(@PathVariable Long id) {
         ProdutoResponse produto = produtoService.buscarPorId(id);
+
         return ResponseEntity.ok(produto);
     }
 
@@ -76,8 +79,9 @@ public class ProdutoController {
         @ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
     @PutMapping("/{produtoId}")
-    public ResponseEntity<ProdutoResponse> atualizarProduto(@PathVariable Long produtoId, @RequestBody ProdutoRequest produtoRequest) {
-        produtoService.atualizarProduto(produtoId, produtoRequest);
+    public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long produtoId, @RequestBody ProdutoRequest produtoRequest) {
+        produtoService.atualizar(produtoId, produtoRequest);
+
         return ResponseEntity.noContent().build();
     }
 

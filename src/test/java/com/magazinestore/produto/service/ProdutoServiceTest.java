@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -56,19 +57,19 @@ public class ProdutoServiceTest {
     @Test
     @DisplayName("Deve cadastrar produto")
     public void deveCadastrarProduto() {
+        CaracteristicaRequest caracteristicaRequest = CaracteristicaRequest.builder()
+            .nome(CARACTERISTICA_NOME)
+            .descricao(CARACTERISTICA_DESCRICAO)
+            .build();
+
+        List<CaracteristicaRequest> caracteristicasRequest = Collections.singletonList(caracteristicaRequest);
+
         ProdutoRequest produto = ProdutoRequest.builder()
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
-
-            .caracteristicas( new ArrayList<>
-                (Collections.singletonList (CaracteristicaRequest
-                    .builder()
-                    .nome(CARACTERISTICA_NOME)
-                    .descricao(CARACTERISTICA_DESCRICAO)
-                    .build()
-                )))
+            .caracteristicas(caracteristicasRequest)
             .build();
 
         Produto guardaRoupa = Produto.builder()
@@ -77,14 +78,20 @@ public class ProdutoServiceTest {
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
-            .caracteristica(new ArrayList<>(Collections.singletonList(
-                Caracteristica.builder()
-                    .id(1L)
-                    .nome(CARACTERISTICA_NOME)
-                    .descricao(CARACTERISTICA_DESCRICAO)
-                    .build()
-            )))
             .build();
+
+        List<CaracteristicaRequest> caracteristicasProduto = produto.getCaracteristicas();
+
+        if (caracteristicasProduto != null && !caracteristicasProduto.isEmpty()) {
+            List<Caracteristica> caracteristicas = caracteristicasProduto.stream()
+                .map(request -> Caracteristica.builder()
+                    .nome(request.getNome())
+                    .descricao(request.getDescricao())
+                    .build())
+                .collect(Collectors.toList());
+
+            guardaRoupa.setCaracteristica(caracteristicas);
+        }
 
         when(produtoRepository.save(ArgumentMatchers.any())).thenReturn(guardaRoupa);
 
@@ -205,7 +212,7 @@ public class ProdutoServiceTest {
         when(produtoRepository.findById(PRODUTO_GUARDA_ROUPA_ID)).thenReturn(Optional.of(guardaRoupaExistente));
         when(produtoRepository.save(ArgumentMatchers.any())).thenReturn(guardaRoupaExistente);
 
-        ProdutoResponse atualizarProduto = produtoService.atualizarProduto(PRODUTO_GUARDA_ROUPA_ID, guardaRoupaRequest);
+        ProdutoResponse atualizarProduto = produtoService.atualizar(PRODUTO_GUARDA_ROUPA_ID, guardaRoupaRequest);
 
         ProdutoResponse guardaRoupaResponse = ProdutoResponse.builder()
             .id(atualizarProduto.getId())
@@ -235,7 +242,7 @@ public class ProdutoServiceTest {
         when(produtoRepository.findById(produtoId)).thenReturn(Optional.empty());
 
         assertThrows(ProdutoNaoEncontradoException.class, () -> {
-            produtoService.atualizarProduto(produtoId, guardaRoupaRequest);
+            produtoService.atualizar(produtoId, guardaRoupaRequest);
         });
     }
 

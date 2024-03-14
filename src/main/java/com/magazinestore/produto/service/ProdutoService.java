@@ -30,21 +30,23 @@ public class ProdutoService {
 
         List<Caracteristica> caracteristicasDoProduto = new ArrayList<>();
 
-        produtoRequest.getCaracteristicas()
-            .forEach(caracteristicaRequest -> {
+        produtoRequest.getCaracteristicas().forEach(caracteristicaRequest -> {
+            if (caracteristicaRequest.getNome() != null && caracteristicaRequest.getDescricao() != null) {
                 Caracteristica novaCaracteristica = new Caracteristica();
                 novaCaracteristica.setNome(caracteristicaRequest.getNome());
                 novaCaracteristica.setDescricao(caracteristicaRequest.getDescricao());
                 novaCaracteristica.setProduto(produto);
                 caracteristicasDoProduto.add(novaCaracteristica);
-            });
+            } else {
+                throw new IllegalArgumentException();
+            }
+        });
 
         produto.setCaracteristica(caracteristicasDoProduto);
 
         Produto produtoSalvo = produtoRepository.save(produto);
 
         List<CaracteristicaResponse> caracteristicasResponse = new ArrayList<>();
-
         produtoSalvo.getCaracteristica().forEach(caracteristica -> {
             CaracteristicaResponse caracteristicaResponse = new CaracteristicaResponse(
                 caracteristica.getId(),
@@ -103,7 +105,7 @@ public class ProdutoService {
             .build();
     }
 
-    public ProdutoResponse atualizarProduto(Long produtoId, ProdutoRequest produtoRequest) {
+    public ProdutoResponse atualizar(Long produtoId, ProdutoRequest produtoRequest) {
         Optional<Produto> produto = produtoRepository.findById(produtoId);
 
         if (produto.isEmpty()) {
@@ -112,40 +114,32 @@ public class ProdutoService {
 
         Produto produtoExistente = produto.get();
 
-        List<Caracteristica> caracteristicas = new ArrayList<>();
-
         if (produtoRequest.getCaracteristicas() != null) {
-
-            produtoRequest.getCaracteristicas()
-
-                .forEach(addCaracteristica -> {
+            produtoRequest.getCaracteristicas().forEach(caracteristicaRequest -> {
                 Caracteristica caracteristica = Caracteristica
                     .builder()
-                    .nome(addCaracteristica.getNome())
-                    .descricao(addCaracteristica.getDescricao())
+                    .nome(caracteristicaRequest.getNome())
+                    .descricao(caracteristicaRequest.getDescricao())
                     .produto(produtoExistente)
                     .build();
-                caracteristicas.add(caracteristica);
+                produtoExistente.getCaracteristica().add(caracteristica);
+
             });
         }
 
-        Produto produtoAtualizado = Produto.builder()
-            .id(produtoExistente.getId())
-            .nome(produtoRequest.getNome())
-            .descricao(produtoRequest.getDescricao())
-            .preco(produtoRequest.getPreco())
-            .marca(produtoRequest.getMarca())
-            .caracteristica(caracteristicas)
-            .build();
+        produtoExistente.setNome(produtoRequest.getNome());
+        produtoExistente.setDescricao(produtoRequest.getDescricao());
+        produtoExistente.setMarca(produtoRequest.getMarca());
+        produtoExistente.setPreco(produtoRequest.getPreco());
 
-        produtoAtualizado = produtoRepository.save(produtoAtualizado);
+        produtoRepository.save(produtoExistente);
 
         return ProdutoResponse.builder()
-            .id(produtoAtualizado.getId())
-            .nome(produtoAtualizado.getNome())
-            .descricao(produtoAtualizado.getDescricao())
-            .preco(produtoAtualizado.getPreco())
-            .marca(produtoAtualizado.getMarca())
+            .id(produtoExistente.getId())
+            .nome(produtoExistente.getNome())
+            .descricao(produtoExistente.getDescricao())
+            .preco(produtoExistente.getPreco())
+            .marca(produtoExistente.getMarca())
             .build();
     }
 
