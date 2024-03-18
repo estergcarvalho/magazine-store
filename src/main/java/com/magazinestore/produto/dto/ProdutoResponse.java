@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Builder
@@ -24,5 +25,8 @@ public class ProdutoResponse {
 
     @Schema(description = "Marca do produto", example = "Apple")
     private String marca;
+
+    @Schema(description = "Caracteristicas do produto", example = "cor, dimensão, material")
+    private List<CaracteristicaResponse> caracteristicas;
 
 }
