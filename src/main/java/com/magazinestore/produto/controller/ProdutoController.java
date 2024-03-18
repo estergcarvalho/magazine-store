@@ -2,6 +2,7 @@ package com.magazinestore.produto.controller;
 
 import com.magazinestore.produto.dto.ProdutoRequest;
 import com.magazinestore.produto.dto.ProdutoResponse;
+import com.magazinestore.produto.model.Produto;
 import com.magazinestore.produto.service.ProdutoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -71,6 +73,22 @@ public class ProdutoController {
     }
 
     @Operation(
+        summary="Retorna produto dado nome ou descrição",
+        description = "Retorna o produto com base no nome ou descrição fornecido"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Produto encontrado"),
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado")
+    })
+    @GetMapping("/pesquisa")
+    public ResponseEntity<List<Produto>> buscarProdutoPorTexto(@RequestParam(required = false) String nome,
+                                                               @RequestParam(required = false) String descricao) {
+        List<Produto> produtos = produtoService.buscarProdutosPorTexto(nome, descricao);
+
+        return ResponseEntity.ok(produtos);
+    }
+
+    @Operation(
         summary = "Atualizar um produto",
         description = "Atualiza os detalhes de um produto com base no ID fornecido"
     )
@@ -79,7 +97,8 @@ public class ProdutoController {
         @ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
     @PutMapping("/{produtoId}")
-    public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long produtoId, @RequestBody ProdutoRequest produtoRequest) {
+    public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long produtoId, @RequestBody ProdutoRequest
+    produtoRequest){
         produtoService.atualizar(produtoId, produtoRequest);
 
         return ResponseEntity.noContent().build();

@@ -16,7 +16,6 @@ O projeto faz uso de:
 - [Flywal](https://flywaydb.org/)
 - [Lombok](https://start.spring.io/)
 - [PostgreSQL](https://www.postgresql.org/)
-- [H2 database](https://www.h2database.com/html/main.html)
 
 ---
 
@@ -26,14 +25,6 @@ O projeto faz uso de:
   - URL: jdbc:postgresql://localhost:5432/magazinestore
   - usuario: magazinestore
   - senha: magazinestore
-
----
-
-## Banco de dados para testes integrados
-
-`H2`
-  - URL: jdbc:h2:mem:testdb
-  - Usuário: sa
 
 ---
 

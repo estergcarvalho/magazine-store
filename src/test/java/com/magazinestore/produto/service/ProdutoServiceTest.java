@@ -176,12 +176,47 @@ public class ProdutoServiceTest {
 
     @Test
     @DisplayName("Deve lançar exception para produto não encontrado")
-    public void deveLancarExceptionProdutoNaoEncontrado() throws Exception {
+    public void deveLancarExceptionProdutoNaoEncontrado() {
         Long id = 99999999L;
 
         when(produtoRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(ProdutoNaoEncontradoException.class, () -> produtoService.buscarPorId(id));
+    }
+
+    @Test
+    @DisplayName("Deve buscar produto por texto e retornar sucesso")
+    public void deveBuscarProdutoPorTextoERetornarSucesso() {
+        String nome = "ipaD";
+        String descricao = "mIni";
+
+        Produto produto = Produto.builder()
+            .nome(nome)
+            .descricao(descricao)
+            .build();
+
+        when(produtoRepository.findByNomeIgnoreCaseContainingOrDescricaoIgnoreCaseContaining(nome, descricao))
+            .thenReturn(List.of(produto));
+
+        List<Produto> produtoEncontrado = produtoService.buscarProdutosPorTexto(nome, descricao);
+
+        Produto produtoRetornado = produtoEncontrado.get(0);
+
+        assertEquals(nome, produtoRetornado.getNome());
+        assertEquals(descricao, produtoRetornado.getDescricao());
+        assertNotNull(produtoRetornado);
+    }
+
+    @Test
+    @DisplayName("Deve lancar exception para produto não localizado")
+    public void deveLancarExceptionParaProdutoNaoLocalizado() {
+        String nome = "nome produto inexistente";
+        String descricao = "descricao produto inexistente";
+
+        when(produtoRepository.findByNomeIgnoreCaseContainingOrDescricaoIgnoreCaseContaining(nome, descricao))
+            .thenReturn(Collections.emptyList());
+
+        assertThrows(ProdutoNaoEncontradoException.class, () -> produtoService.buscarProdutosPorTexto(nome, descricao));
     }
 
     @Test

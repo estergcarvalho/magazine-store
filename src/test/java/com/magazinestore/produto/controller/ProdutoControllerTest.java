@@ -19,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -32,7 +31,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -200,6 +198,29 @@ public class ProdutoControllerTest {
         mockMvc.perform(get("/produtos/{id}", idNaoExistente)
                 .contentType("application/json"))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve buscar produto por texto e retornar sucesso")
+    public void deveBuscarProdutoPorTextoERetornarSucesso() throws Exception {
+        String nome = "iPad";
+        String descricao = "miNi";
+
+        Produto produto = Produto.builder()
+            .nome(nome)
+            .descricao(descricao)
+            .build();
+
+        when(produtoRepository
+            .findByNomeIgnoreCaseContainingOrDescricaoIgnoreCaseContaining(nome, descricao)).thenReturn(List.of(produto));
+
+        mockMvc.perform(get("/produtos/pesquisa")
+                .param("nome", nome)
+                .param("descricao", descricao)
+                .contentType("application/json"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].nome").value(nome))
+            .andExpect(jsonPath("$[0].descricao").value(descricao));
     }
 
     @Test

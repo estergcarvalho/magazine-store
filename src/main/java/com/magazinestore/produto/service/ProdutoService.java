@@ -64,7 +64,6 @@ public class ProdutoService {
             .build();
     }
 
-
     public List<ProdutoResponse> listar() {
         List<Produto> produtos = produtoRepository.findAll();
 
@@ -139,6 +138,17 @@ public class ProdutoService {
             .preco(produtoExistente.getPreco())
             .marca(produtoExistente.getMarca())
             .build();
+    }
+
+    public List<Produto> buscarProdutosPorTexto(String nome, String descricao) {
+        List<Produto> produtos = produtoRepository
+            .findByNomeIgnoreCaseContainingOrDescricaoIgnoreCaseContaining(nome, descricao);
+
+        if (produtos.isEmpty()) {
+            throw new ProdutoNaoEncontradoException();
+        }
+
+        return produtos;
     }
 
 }
