@@ -73,15 +73,17 @@ public class ProdutoService {
         produtos.forEach(produto -> {
             List<CaracteristicaResponse> caracteristicas = new ArrayList<>();
 
-            if (!CollectionUtils.isEmpty(produto.getCaracteristica()))
+            if (!CollectionUtils.isEmpty(produto.getCaracteristica())) {
                 produto.getCaracteristica().forEach(caracteristica ->
                     caracteristicas.add(
                         CaracteristicaResponse.builder()
                             .id(caracteristica.getId())
                             .nome(caracteristica.getNome())
                             .descricao(caracteristica.getDescricao())
-                            .build())
+                            .build()
+                    )
                 );
+            }
 
             ProdutoResponse produtoResponse = ProdutoResponse.builder()
                 .id(produto.getId())

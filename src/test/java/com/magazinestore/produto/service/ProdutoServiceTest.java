@@ -177,7 +177,7 @@ public class ProdutoServiceTest {
 
     @Test
     @DisplayName("Deve buscar produto por id")
-    public void deveBuscarProdutoPorId() throws ProdutoNaoEncontradoException {
+    public void deveBuscarProdutoPorId() {
         Produto guardaRoupa = Produto.builder()
             .id(10L)
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
@@ -209,7 +209,7 @@ public class ProdutoServiceTest {
 
     @Test
     @DisplayName("Deve lançar exception para produto não encontrado")
-    public void deveLancarExceptionProdutoNaoEncontrado() throws Exception {
+    public void deveLancarExceptionProdutoNaoEncontrado() {
         Long id = 99999999L;
 
         when(produtoRepository.findById(id)).thenReturn(Optional.empty());
