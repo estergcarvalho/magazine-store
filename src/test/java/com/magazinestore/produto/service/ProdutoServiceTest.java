@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -112,12 +113,30 @@ public class ProdutoServiceTest {
     public void deveListarProdutos() {
         List<Produto> produtos = new ArrayList<>();
 
+        List<CaracteristicaRequest> caracteristicasRequest = Collections.singletonList(
+            CaracteristicaRequest.builder()
+                .nome(CARACTERISTICA_NOME)
+                .descricao(CARACTERISTICA_DESCRICAO)
+                .build()
+        );
+
+        List<Caracteristica> caracteristicas = new ArrayList<>();
+
+        caracteristicasRequest.forEach(caracteristicaRequest -> {
+            Caracteristica caracteristica = Caracteristica.builder()
+                .nome(caracteristicaRequest.getNome())
+                .descricao(caracteristicaRequest.getDescricao())
+                .build();
+            caracteristicas.add(caracteristica);
+        });
+
         Produto guardaRoupa = Produto.builder()
             .id(1L)
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
+            .caracteristica(caracteristicas)
             .build();
         produtos.add(guardaRoupa);
 
@@ -127,6 +146,7 @@ public class ProdutoServiceTest {
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
             .preco(PRODUTO_TELEVISAO_PRECO)
             .marca(PRODUTO_TELEVISAO_MARCA)
+            .caracteristica(new ArrayList<>())
             .build();
         produtos.add(televisao);
 
@@ -142,6 +162,9 @@ public class ProdutoServiceTest {
         assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, guardaRoupaResponse.getDescricao());
         assertEquals(PRODUTO_GUARDA_ROUPA_MARCA, guardaRoupaResponse.getMarca());
         assertEquals(PRODUTO_GUARDA_ROUPA_PRECO, guardaRoupaResponse.getPreco());
+        assertEquals(1, guardaRoupaResponse.getCaracteristicas().size());
+        assertEquals(CARACTERISTICA_NOME, guardaRoupaResponse.getCaracteristicas().get(0).getNome());
+        assertEquals(CARACTERISTICA_DESCRICAO, guardaRoupaResponse.getCaracteristicas().get(0).getDescricao());
 
         ProdutoResponse televisaoResponse = produtosResponse.get(1);
         assertEquals(2L, televisaoResponse.getId().longValue());
@@ -149,17 +172,24 @@ public class ProdutoServiceTest {
         assertEquals(PRODUTO_TELEVISAO_DESCRICAO, televisaoResponse.getDescricao());
         assertEquals(PRODUTO_TELEVISAO_MARCA, televisaoResponse.getMarca());
         assertEquals(PRODUTO_TELEVISAO_PRECO, televisaoResponse.getPreco());
+        assertTrue(televisaoResponse.getCaracteristicas().isEmpty());
     }
 
     @Test
     @DisplayName("Deve buscar produto por id")
-    public void deveBuscarProdutoPorId() throws ProdutoNaoEncontradoException {
+    public void deveBuscarProdutoPorId() {
         Produto guardaRoupa = Produto.builder()
             .id(10L)
             .nome(PRODUTO_GUARDA_ROUPA_NOME)
             .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
             .preco(PRODUTO_GUARDA_ROUPA_PRECO)
             .marca(PRODUTO_GUARDA_ROUPA_MARCA)
+            .caracteristica(Collections.singletonList(
+                Caracteristica.builder()
+                    .nome(CARACTERISTICA_NOME)
+                    .descricao(CARACTERISTICA_DESCRICAO)
+                    .build()
+            ))
             .build();
 
         when(produtoRepository.findById(anyLong())).thenReturn(Optional.of(guardaRoupa));
@@ -172,6 +202,9 @@ public class ProdutoServiceTest {
         assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, guardaRoupaResponse.getDescricao());
         assertEquals(PRODUTO_GUARDA_ROUPA_PRECO, guardaRoupaResponse.getPreco());
         assertEquals(PRODUTO_GUARDA_ROUPA_MARCA, guardaRoupaResponse.getMarca());
+        assertEquals(1, guardaRoupaResponse.getCaracteristicas().size());
+        assertEquals(CARACTERISTICA_NOME, guardaRoupaResponse.getCaracteristicas().get(0).getNome());
+        assertEquals(CARACTERISTICA_DESCRICAO, guardaRoupaResponse.getCaracteristicas().get(0).getDescricao());
     }
 
     @Test

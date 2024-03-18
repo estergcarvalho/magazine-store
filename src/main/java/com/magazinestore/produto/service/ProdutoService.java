@@ -70,36 +70,62 @@ public class ProdutoService {
         List<ProdutoResponse> produtosResponse = new ArrayList<>();
 
         produtos.forEach(produto -> {
+            List<CaracteristicaResponse> caracteristicas = new ArrayList<>();
+
+            if (!CollectionUtils.isEmpty(produto.getCaracteristica())) {
+                produto.getCaracteristica().forEach(caracteristica ->
+                    caracteristicas.add(
+                        CaracteristicaResponse.builder()
+                            .id(caracteristica.getId())
+                            .nome(caracteristica.getNome())
+                            .descricao(caracteristica.getDescricao())
+                            .build()
+                    )
+                );
+            }
+
             ProdutoResponse produtoResponse = ProdutoResponse.builder()
                 .id(produto.getId())
                 .nome(produto.getNome())
                 .descricao(produto.getDescricao())
                 .marca(produto.getMarca())
                 .preco(produto.getPreco())
+                .caracteristicas(caracteristicas)
                 .build();
 
             produtosResponse.add(produtoResponse);
         });
 
         return produtosResponse;
-
     }
 
     public ProdutoResponse buscarPorId(Long id) throws ProdutoNaoEncontradoException {
-        Optional<Produto> produtoOptional = produtoRepository.findById(id);
+        Optional<Produto> produto = produtoRepository.findById(id);
 
-        if (produtoOptional.isEmpty()) {
+        if (produto.isEmpty()) {
             throw new ProdutoNaoEncontradoException();
         }
 
-        Produto produto = produtoOptional.get();
+        Produto produtoExistente = produto.get();
+
+        List<CaracteristicaResponse> caracteristicas = new ArrayList<>();
+        produtoExistente.getCaracteristica().forEach(caracteristica -> {
+            caracteristicas.add(
+                CaracteristicaResponse.builder()
+                    .id(caracteristica.getId())
+                    .nome(caracteristica.getNome())
+                    .descricao(caracteristica.getDescricao())
+                    .build()
+            );
+        });
 
         return ProdutoResponse.builder()
-            .id(produto.getId())
-            .nome(produto.getNome())
-            .descricao(produto.getDescricao())
-            .preco(produto.getPreco())
-            .marca(produto.getMarca())
+            .id(produtoExistente.getId())
+            .nome(produtoExistente.getNome())
+            .descricao(produtoExistente.getDescricao())
+            .preco(produtoExistente.getPreco())
+            .marca(produtoExistente.getMarca())
+            .caracteristicas(caracteristicas)
             .build();
     }
 
