@@ -78,7 +78,7 @@ public class ProdutoController {
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Produto encontrado"),
-        @ApiResponse(responseCode = "404", description = "Nome ou descrição do produto não encontrado")
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
     @GetMapping("/pesquisa")
     public ResponseEntity<List<Produto>> buscarProdutoPorTexto(@RequestParam(required = false) String nome,
@@ -88,20 +88,20 @@ public class ProdutoController {
         return ResponseEntity.ok(produtos);
     }
 
-        @Operation(
-            summary = "Atualizar um produto",
-            description = "Atualiza os detalhes de um produto com base no ID fornecido"
-        )
-        @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Produto atualizado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Produto não encontrado")
-        })
-        @PutMapping("/{produtoId}")
-        public ResponseEntity<ProdutoResponse> atualizar (@PathVariable Long produtoId, @RequestBody ProdutoRequest
-        produtoRequest){
-            produtoService.atualizar(produtoId, produtoRequest);
+    @Operation(
+        summary = "Atualizar um produto",
+        description = "Atualiza os detalhes de um produto com base no ID fornecido"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Produto atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado")
+    })
+    @PutMapping("/{produtoId}")
+    public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long produtoId, @RequestBody ProdutoRequest
+    produtoRequest){
+        produtoService.atualizar(produtoId, produtoRequest);
 
-            return ResponseEntity.noContent().build();
-        }
-
+        return ResponseEntity.noContent().build();
     }
+
+}

@@ -143,6 +143,7 @@ public class ProdutoService {
     public List<Produto> buscarProdutosPorTexto(String nome, String descricao) {
         List<Produto> produtos = produtoRepository
             .findByNomeIgnoreCaseContainingOrDescricaoIgnoreCaseContaining(nome, descricao);
+
         if (produtos.isEmpty()) {
             throw new ProdutoNaoEncontradoException();
         }

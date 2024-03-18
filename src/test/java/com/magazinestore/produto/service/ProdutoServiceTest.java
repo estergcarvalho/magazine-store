@@ -269,7 +269,7 @@ public class ProdutoServiceTest {
 
     @Test
     @DisplayName("Deve lançar exceção para produto não encontrado ao tentar atualizar")
-    public void deveLancarExceptionProdutoNaoEncontradoAoAtualizar() throws ProdutoNaoEncontradoException {
+    public void deveLancarExceptionProdutoNaoEncontradoAoAtualizar() {
         Long produtoId = 1L;
 
         ProdutoRequest guardaRoupaRequest = ProdutoRequest.builder().build();
