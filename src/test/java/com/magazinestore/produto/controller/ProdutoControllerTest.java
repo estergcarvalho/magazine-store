@@ -3,6 +3,8 @@ package com.magazinestore.produto.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.magazinestore.produto.dto.CaracteristicaRequest;
 import com.magazinestore.produto.dto.ProdutoRequest;
+import com.magazinestore.produto.dto.ProdutoResponse;
+import com.magazinestore.produto.exception.ProdutoNaoEncontradoException;
 import com.magazinestore.produto.model.Caracteristica;
 import com.magazinestore.produto.model.Produto;
 import com.magazinestore.produto.repository.ProdutoRepository;
@@ -32,6 +34,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -69,6 +72,8 @@ public class ProdutoControllerTest {
 
     private static final String CARACTERISTICA_NOME = "Dimensao:";
     private static final String CARACTERISTICA_DESCRICAO = "Largura: 1m Altura: 80cm. Profundidade: 60cm";
+
+    private static final Long CARACTERISTICA_ID = 116L;
 
     @Test
     @DisplayName("Deve cadastrar um produto")
@@ -174,6 +179,14 @@ public class ProdutoControllerTest {
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
             .preco(PRODUTO_TELEVISAO_PRECO)
             .marca(PRODUTO_TELEVISAO_MARCA)
+
+            .caracteristica(new ArrayList<>(Collections.singletonList(
+                Caracteristica.builder()
+                    .id(CARACTERISTICA_ID)
+                    .nome(CARACTERISTICA_NOME)
+                    .descricao(CARACTERISTICA_DESCRICAO)
+                    .build()
+            )))
             .build();
 
         when(produtoRepository.findById(anyLong())).thenReturn(Optional.of(televisao));
@@ -286,6 +299,43 @@ public class ProdutoControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/produtos/{produtoId}", idNaoExistente)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve deletar produto")
+    public void deveDeletarProduto() throws Exception {
+        Long idTelevisao= 115L;
+
+        Produto televisao = Produto.builder()
+            .id(idTelevisao)
+            .nome(PRODUTO_TELEVISAO_NOME)
+            .descricao(PRODUTO_TELEVISAO_DESCRICAO)
+            .preco(PRODUTO_TELEVISAO_PRECO)
+            .marca(PRODUTO_TELEVISAO_MARCA)
+            .build();
+
+        when(produtoRepository.findById(idTelevisao)).thenReturn(Optional.of(televisao));
+
+        mockMvc.perform(delete("/produtos/{id}", idTelevisao)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(idTelevisao))
+            .andExpect(jsonPath("$.nome").value(PRODUTO_TELEVISAO_NOME))
+            .andExpect(jsonPath("$.descricao").value(PRODUTO_TELEVISAO_DESCRICAO))
+            .andExpect(jsonPath("$.preco").value(PRODUTO_TELEVISAO_PRECO))
+            .andExpect(jsonPath("$.marca").value(PRODUTO_TELEVISAO_MARCA));
+    }
+
+    @Test
+    @DisplayName("Deve retornar status 404 ao tentar deletar produto não encontrado")
+    public void deveRetornarNotFoundQuandoProdutoNaoEncontrado() throws Exception {
+        Long idNaoExistente = 789L;
+
+        when(produtoRepository.findById(idNaoExistente)).thenReturn(Optional.empty());
+
+        mockMvc.perform(delete("/produtos/{produtoId}", idNaoExistente)
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
     }
 

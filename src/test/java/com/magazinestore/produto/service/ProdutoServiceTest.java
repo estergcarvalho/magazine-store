@@ -314,4 +314,50 @@ public class ProdutoServiceTest {
         });
     }
 
+    @Test
+    @DisplayName("Deve deletar o produto existente")
+    public void deveDeletarProdutoExistente(){
+        Long IdguardaRoupa = 115L;
+
+        Produto guardaRoupa = Produto.builder()
+            .id(IdguardaRoupa)
+            .nome(PRODUTO_GUARDA_ROUPA_NOME)
+            .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
+            .preco(PRODUTO_GUARDA_ROUPA_PRECO)
+            .marca(PRODUTO_GUARDA_ROUPA_MARCA)
+            .caracteristica(Collections.singletonList(
+                Caracteristica.builder()
+                    .nome(CARACTERISTICA_NOME)
+                    .descricao(CARACTERISTICA_DESCRICAO)
+                    .build()
+            ))
+            .build();
+
+        when(produtoRepository.findById(anyLong())).thenReturn(Optional.of(guardaRoupa));
+
+        ProdutoResponse guardaRoupaResponse = produtoService.deletarProduto(IdguardaRoupa);
+
+        assertNotNull(guardaRoupaResponse);
+        assertEquals(115L, guardaRoupaResponse.getId().longValue());
+        assertEquals(PRODUTO_GUARDA_ROUPA_NOME, guardaRoupaResponse.getNome());
+        assertEquals(PRODUTO_GUARDA_ROUPA_DESCRICAO, guardaRoupaResponse.getDescricao());
+        assertEquals(PRODUTO_GUARDA_ROUPA_PRECO, guardaRoupaResponse.getPreco());
+        assertEquals(PRODUTO_GUARDA_ROUPA_MARCA, guardaRoupaResponse.getMarca());
+        assertEquals(1, guardaRoupaResponse.getCaracteristicas().size());
+        assertEquals(CARACTERISTICA_NOME, guardaRoupaResponse.getCaracteristicas().get(0).getNome());
+        assertEquals(CARACTERISTICA_DESCRICAO, guardaRoupaResponse.getCaracteristicas().get(0).getDescricao());
+    }
+
+    @Test
+    @DisplayName("Deve lançar ProdutoNaoEncontradoException ao tentar deletar um produto inexistente")
+    public void deveLancarProdutoNaoEncontradoExceptionAoDeletarProdutoInexistente(){
+        Long idInexistente = 116L;
+
+        when(produtoRepository.findById(idInexistente)).thenReturn(Optional.empty());
+
+        assertThrows(ProdutoNaoEncontradoException.class, () -> {
+            produtoService.deletarProduto(idInexistente);
+        });
+    }
+
 }

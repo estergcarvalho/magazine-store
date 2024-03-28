@@ -166,7 +166,7 @@ public class ProdutoService {
             .build();
     }
 
-    public List<Produto> buscarProdutosPorTexto(String nome, String descricao) {
+    public List<Produto> buscarProdutosPorTexto(String nome, String descricao)  {
         List<Produto> produtos = produtoRepository
             .findByNomeIgnoreCaseContainingOrDescricaoIgnoreCaseContaining(nome, descricao);
 
@@ -175,6 +175,42 @@ public class ProdutoService {
         }
 
         return produtos;
+    }
+
+    public ProdutoResponse deletarProduto(Long produtoId){
+        Optional<Produto> produtoOptional = produtoRepository.findById(produtoId);
+
+        if (produtoOptional.isEmpty()) {
+            throw new ProdutoNaoEncontradoException();
+        }
+
+        Produto produto = produtoOptional.get();
+
+        List<CaracteristicaResponse> caracteristicas = new ArrayList<>();
+        if (produto.getCaracteristica() != null) {
+            produto.getCaracteristica().forEach(caracteristica -> {
+                caracteristicas.add(
+                    CaracteristicaResponse.builder()
+                        .id(caracteristica.getId())
+                        .nome(caracteristica.getNome())
+                        .descricao(caracteristica.getDescricao())
+                        .build()
+                );
+            });
+        }
+
+        ProdutoResponse produtoResponse = ProdutoResponse.builder()
+            .id(produto.getId())
+            .nome(produto.getNome())
+            .descricao(produto.getDescricao())
+            .preco(produto.getPreco())
+            .marca(produto.getMarca())
+            .caracteristicas(caracteristicas)
+            .build();
+
+        produtoRepository.delete(produto);
+
+        return produtoResponse;
     }
 
 }

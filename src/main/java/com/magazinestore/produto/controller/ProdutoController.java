@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,7 +74,7 @@ public class ProdutoController {
     }
 
     @Operation(
-        summary="Retorna produto dado nome ou descrição",
+        summary = "Retorna produto dado nome ou descrição",
         description = "Retorna o produto com base no nome ou descrição fornecido"
     )
     @ApiResponses(value = {
@@ -98,10 +99,17 @@ public class ProdutoController {
     })
     @PutMapping("/{produtoId}")
     public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long produtoId, @RequestBody ProdutoRequest
-    produtoRequest){
+        produtoRequest) {
         produtoService.atualizar(produtoId, produtoRequest);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{produtoId}")
+        public ResponseEntity<ProdutoResponse>deletarProduto(@PathVariable Long produtoId){
+            ProdutoResponse produtodeletado = produtoService.deletarProduto(produtoId);
+
+            return ResponseEntity.ok(produtodeletado);
     }
 
 }
