@@ -105,6 +105,14 @@ public class ProdutoController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+        summary = "Deletar produto existente",
+        description = "Deletar o produto com base no ID fornecido"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Produto deletado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado")
+    })
     @DeleteMapping("/{produtoId}")
     public ResponseEntity<ProdutoResponse> deletarProduto(@PathVariable Long produtoId) {
         ProdutoResponse produtodeletado = produtoService.deletarProduto(produtoId);
