@@ -297,7 +297,6 @@ public class ProdutoServiceTest {
         assertEquals(guardaRoupaResponse.getPreco(), produtoAtualizado.getPreco());
         assertEquals(guardaRoupaResponse.getMarca(), produtoAtualizado.getMarca());
         assertEquals(guardaRoupaResponse.getCaracteristicas(), produtoAtualizado.getCaracteristicas());
-
     }
 
     @Test
@@ -309,9 +308,7 @@ public class ProdutoServiceTest {
 
         when(produtoRepository.findById(produtoId)).thenReturn(Optional.empty());
 
-        assertThrows(ProdutoNaoEncontradoException.class, () -> {
-            produtoService.atualizar(produtoId, guardaRoupaRequest);
-        });
+        assertThrows(ProdutoNaoEncontradoException.class, () -> produtoService.atualizar(produtoId, guardaRoupaRequest));
     }
 
     @Test
@@ -355,9 +352,7 @@ public class ProdutoServiceTest {
 
         when(produtoRepository.findById(idInexistente)).thenReturn(Optional.empty());
 
-        assertThrows(ProdutoNaoEncontradoException.class, () -> {
-            produtoService.deletarProduto(idInexistente);
-        });
+        assertThrows(ProdutoNaoEncontradoException.class, () -> produtoService.deletarProduto(idInexistente));
     }
 
 }
