@@ -10,8 +10,11 @@ import com.magazinestore.produto.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,13 +24,16 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository produtoRepository;
 
-    public ProdutoResponse cadastrar(ProdutoRequest produtoRequest) {
+    public ProdutoResponse cadastrar(ProdutoRequest produtoRequest, MultipartFile imagem) throws IOException {
+        String file = Base64.getEncoder().encodeToString(imagem.getBytes());
+
         Produto produto = Produto.builder()
             .nome(produtoRequest.getNome())
             .descricao(produtoRequest.getDescricao())
             .preco(produtoRequest.getPreco())
             .marca(produtoRequest.getMarca())
             .caracteristica(new ArrayList<>())
+            .imagem(file)
             .build();
 
         if (!CollectionUtils.isEmpty(produtoRequest.getCaracteristicas())) {
@@ -177,7 +183,7 @@ public class ProdutoService {
         return produtos;
     }
 
-    public ProdutoResponse deletarProduto(Long produtoId) {
+    public void deletar(Long produtoId) {
         Optional<Produto> produtoOptional = produtoRepository.findById(produtoId);
 
         if (produtoOptional.isEmpty()) {
@@ -186,31 +192,7 @@ public class ProdutoService {
 
         Produto produto = produtoOptional.get();
 
-        List<CaracteristicaResponse> caracteristicas = new ArrayList<>();
-        if (produto.getCaracteristica() != null) {
-            produto.getCaracteristica().forEach(caracteristica -> {
-                caracteristicas.add(
-                    CaracteristicaResponse.builder()
-                        .id(caracteristica.getId())
-                        .nome(caracteristica.getNome())
-                        .descricao(caracteristica.getDescricao())
-                        .build()
-                );
-            });
-        }
-
-        ProdutoResponse produtoResponse = ProdutoResponse.builder()
-            .id(produto.getId())
-            .nome(produto.getNome())
-            .descricao(produto.getDescricao())
-            .preco(produto.getPreco())
-            .marca(produto.getMarca())
-            .caracteristicas(caracteristicas)
-            .build();
-
         produtoRepository.delete(produto);
-
-        return produtoResponse;
     }
 
 }

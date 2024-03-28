@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +36,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -67,7 +69,6 @@ public class ProdutoControllerTest {
     private static final String PRODUTO_TELEVISAO_DESCRICAO = "Ela possui resolução UHD 4K com tecnologia LED";
     private static final BigDecimal PRODUTO_TELEVISAO_PRECO = new BigDecimal("2599.0");
     private static final String PRODUTO_TELEVISAO_MARCA = "LG";
-
     private static final String CARACTERISTICA_NOME = "Dimensao:";
     private static final String CARACTERISTICA_DESCRICAO = "Largura: 1m Altura: 80cm. Profundidade: 60cm";
 
@@ -77,6 +78,16 @@ public class ProdutoControllerTest {
     @DisplayName("Deve cadastrar um produto")
     public void deveCadastrarProduto() throws Exception {
         Long id = 1L;
+
+        byte[] imagemTelevisao = "televisao.jpg".getBytes();
+        String imagem = Base64.getEncoder().encodeToString(imagemTelevisao);
+
+        MockMultipartFile formatoImgAceito = new MockMultipartFile(
+            "imagem",
+            "televisao.jpg",
+            "multipart/form-data",
+            imagem.getBytes()
+        );
 
         ProdutoRequest televisaoRequest = ProdutoRequest.builder()
             .nome(PRODUTO_TELEVISAO_NOME)
@@ -98,10 +109,11 @@ public class ProdutoControllerTest {
             .descricao(PRODUTO_TELEVISAO_DESCRICAO)
             .preco(PRODUTO_TELEVISAO_PRECO)
             .marca(PRODUTO_TELEVISAO_MARCA)
+            .imagem(imagem)
 
             .caracteristica(new ArrayList<>(Collections.singletonList(
                 Caracteristica.builder()
-                    .id(1L)
+                    .id(id)
                     .nome(CARACTERISTICA_NOME)
                     .descricao(CARACTERISTICA_DESCRICAO)
                     .build()
@@ -110,9 +122,15 @@ public class ProdutoControllerTest {
 
         when(produtoRepository.save(any())).thenReturn(televisao);
 
-        mockMvc.perform(post("/produtos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(televisaoRequest)))
+        mockMvc.perform(
+                multipart("/produtos")
+                    .file(formatoImgAceito)
+                    .file(new MockMultipartFile(
+                        "produtoRequest",
+                        "televisao",
+                        "application/json",
+                        objectMapper.writeValueAsBytes(televisaoRequest)))
+            )
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(id))
             .andExpect(jsonPath("$.nome").value(PRODUTO_TELEVISAO_NOME))
@@ -181,6 +199,7 @@ public class ProdutoControllerTest {
             .caracteristica(new ArrayList<>(Collections.singletonList(
                 Caracteristica.builder()
                     .id(CARACTERISTICA_ID)
+                    .id(idTelevisao)
                     .nome(CARACTERISTICA_NOME)
                     .descricao(CARACTERISTICA_DESCRICAO)
                     .build()
@@ -196,7 +215,9 @@ public class ProdutoControllerTest {
             .andExpect(jsonPath("$.nome").value(PRODUTO_TELEVISAO_NOME))
             .andExpect(jsonPath("$.descricao").value(PRODUTO_TELEVISAO_DESCRICAO))
             .andExpect(jsonPath("$.preco").value(PRODUTO_TELEVISAO_PRECO))
-            .andExpect(jsonPath("$.marca").value(PRODUTO_TELEVISAO_MARCA));
+            .andExpect(jsonPath("$.marca").value(PRODUTO_TELEVISAO_MARCA))
+            .andExpect(jsonPath("$.caracteristicas[0].nome").value(CARACTERISTICA_NOME))
+            .andExpect(jsonPath("$.caracteristicas[0].descricao").value(CARACTERISTICA_DESCRICAO));
     }
 
     @Test
@@ -284,7 +305,7 @@ public class ProdutoControllerTest {
         mockMvc.perform(put("/produtos/{produtoId}", guardaRoupaId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(guardaRoupaRequest)))
-            .andExpect(status().isNoContent());
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -317,12 +338,7 @@ public class ProdutoControllerTest {
 
         mockMvc.perform(delete("/produtos/{id}", idTelevisao)
                 .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(idTelevisao))
-            .andExpect(jsonPath("$.nome").value(PRODUTO_TELEVISAO_NOME))
-            .andExpect(jsonPath("$.descricao").value(PRODUTO_TELEVISAO_DESCRICAO))
-            .andExpect(jsonPath("$.preco").value(PRODUTO_TELEVISAO_PRECO))
-            .andExpect(jsonPath("$.marca").value(PRODUTO_TELEVISAO_MARCA));
+            .andExpect(status().isNoContent());
     }
 
     @Test
