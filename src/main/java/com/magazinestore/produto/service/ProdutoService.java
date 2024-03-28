@@ -183,4 +183,16 @@ public class ProdutoService {
         return produtos;
     }
 
+    public void deletar(Long produtoId) {
+        Optional<Produto> produtoOptional = produtoRepository.findById(produtoId);
+
+        if (produtoOptional.isEmpty()) {
+            throw new ProdutoNaoEncontradoException();
+        }
+
+        Produto produto = produtoOptional.get();
+
+        produtoRepository.delete(produto);
+    }
+
 }

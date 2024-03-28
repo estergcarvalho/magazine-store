@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -319,7 +319,6 @@ public class ProdutoServiceTest {
         assertEquals(guardaRoupaResponse.getPreco(), produtoAtualizado.getPreco());
         assertEquals(guardaRoupaResponse.getMarca(), produtoAtualizado.getMarca());
         assertEquals(guardaRoupaResponse.getCaracteristicas(), produtoAtualizado.getCaracteristicas());
-
     }
 
     @Test
@@ -331,9 +330,43 @@ public class ProdutoServiceTest {
 
         when(produtoRepository.findById(produtoId)).thenReturn(Optional.empty());
 
-        assertThrows(ProdutoNaoEncontradoException.class, () -> {
-            produtoService.atualizar(produtoId, guardaRoupaRequest);
-        });
+        assertThrows(ProdutoNaoEncontradoException.class, () -> produtoService.atualizar(produtoId, guardaRoupaRequest));
+    }
+
+    @Test
+    @DisplayName("Deve deletar o produto existente")
+    public void deveDeletarProdutoExistente() {
+        Long idGuardaRoupa = 115L;
+
+        Produto guardaRoupa = Produto.builder()
+            .id(idGuardaRoupa)
+            .nome(PRODUTO_GUARDA_ROUPA_NOME)
+            .descricao(PRODUTO_GUARDA_ROUPA_DESCRICAO)
+            .preco(PRODUTO_GUARDA_ROUPA_PRECO)
+            .marca(PRODUTO_GUARDA_ROUPA_MARCA)
+            .caracteristica(Collections.singletonList(
+                Caracteristica.builder()
+                    .nome(CARACTERISTICA_NOME)
+                    .descricao(CARACTERISTICA_DESCRICAO)
+                    .build()
+            ))
+            .build();
+
+        when(produtoRepository.findById(anyLong())).thenReturn(Optional.of(guardaRoupa));
+
+        produtoService.deletar(idGuardaRoupa);
+
+        verify(produtoRepository, times(1)).delete(guardaRoupa);
+    }
+
+    @Test
+    @DisplayName("Deve lançar ProdutoNaoEncontradoException ao tentar deletar um produto inexistente")
+    public void deveLancarProdutoNaoEncontradoExceptionAoDeletarProdutoInexistente() {
+        Long idInexistente = 116L;
+
+        when(produtoRepository.findById(idInexistente)).thenReturn(Optional.empty());
+
+        assertThrows(ProdutoNaoEncontradoException.class, () -> produtoService.deletar(idInexistente));
     }
 
 }
