@@ -166,7 +166,7 @@ public class ProdutoService {
             .build();
     }
 
-    public List<Produto> buscarProdutosPorTexto(String nome, String descricao)  {
+    public List<Produto> buscarProdutosPorTexto(String nome, String descricao) {
         List<Produto> produtos = produtoRepository
             .findByNomeIgnoreCaseContainingOrDescricaoIgnoreCaseContaining(nome, descricao);
 
@@ -177,7 +177,7 @@ public class ProdutoService {
         return produtos;
     }
 
-    public ProdutoResponse deletarProduto(Long produtoId){
+    public ProdutoResponse deletarProduto(Long produtoId) {
         Optional<Produto> produtoOptional = produtoRepository.findById(produtoId);
 
         if (produtoOptional.isEmpty()) {

@@ -316,7 +316,7 @@ public class ProdutoServiceTest {
 
     @Test
     @DisplayName("Deve deletar o produto existente")
-    public void deveDeletarProdutoExistente(){
+    public void deveDeletarProdutoExistente() {
         Long IdguardaRoupa = 115L;
 
         Produto guardaRoupa = Produto.builder()
@@ -350,7 +350,7 @@ public class ProdutoServiceTest {
 
     @Test
     @DisplayName("Deve lançar ProdutoNaoEncontradoException ao tentar deletar um produto inexistente")
-    public void deveLancarProdutoNaoEncontradoExceptionAoDeletarProdutoInexistente(){
+    public void deveLancarProdutoNaoEncontradoExceptionAoDeletarProdutoInexistente() {
         Long idInexistente = 116L;
 
         when(produtoRepository.findById(idInexistente)).thenReturn(Optional.empty());

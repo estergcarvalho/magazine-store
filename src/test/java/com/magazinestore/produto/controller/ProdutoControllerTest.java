@@ -3,8 +3,6 @@ package com.magazinestore.produto.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.magazinestore.produto.dto.CaracteristicaRequest;
 import com.magazinestore.produto.dto.ProdutoRequest;
-import com.magazinestore.produto.dto.ProdutoResponse;
-import com.magazinestore.produto.exception.ProdutoNaoEncontradoException;
 import com.magazinestore.produto.model.Caracteristica;
 import com.magazinestore.produto.model.Produto;
 import com.magazinestore.produto.repository.ProdutoRepository;
@@ -305,7 +303,7 @@ public class ProdutoControllerTest {
     @Test
     @DisplayName("Deve deletar produto")
     public void deveDeletarProduto() throws Exception {
-        Long idTelevisao= 115L;
+        Long idTelevisao = 115L;
 
         Produto televisao = Produto.builder()
             .id(idTelevisao)
