@@ -29,4 +29,6 @@ public class ProdutoResponse {
     @Schema(description = "Caracteristicas do produto", example = "cor, dimensão, material")
     private List<CaracteristicaResponse> caracteristicas;
 
+    @Schema(description = "Imagem do produto", example = "imagem.jpg")
+    private String imagem;
 }

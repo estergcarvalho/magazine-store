@@ -67,6 +67,7 @@ public class ProdutoService {
             .preco(produtoSalvo.getPreco())
             .marca(produtoSalvo.getMarca())
             .caracteristicas(caracteristicasResponse)
+            .imagem(file)
             .build();
     }
 
@@ -97,6 +98,7 @@ public class ProdutoService {
                 .marca(produto.getMarca())
                 .preco(produto.getPreco())
                 .caracteristicas(caracteristicas)
+                .imagem(produto.getImagem())
                 .build();
 
             produtosResponse.add(produtoResponse);
